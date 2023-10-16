@@ -19,7 +19,7 @@ TODO: Replace me with description of the module(s) in this repo
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
 ## Overview
-* [terraform-ibm-module-template](#terraform-ibm-module-template)
+* [terraform-ibm-s2s-auth](#terraform-ibm-s2s-auth)
 * [Examples](./examples)
     * [Basic example](./examples/basic)
     * [Complete example](./examples/complete)
