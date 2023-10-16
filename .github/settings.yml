@@ -15,14 +15,14 @@ repository:
   # By changing this field, you rename the repository.
 
   # Uncomment this name property and set the name to the current repo name.
-  # name: ""
+  name: "terraform-ibm-s2s-auth"
 
   # The description is displayed under the repository name on the
   # organization page and in the 'About' section of the repository.
 
   # Uncomment this description property
   # and update the description to the current repo description.
-  # description: ""
+  description: "This module is to set up a list of s2s authorization policies, and cbr rules"
 
   # Use a comma-separated list of topics to set on the repo.
-  topics: terraform, ibm-cloud, terraform-module
+  topics: terraform, ibm-cloud, terraform-module, core-team, s2s-auth, iam
