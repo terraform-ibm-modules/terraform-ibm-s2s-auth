@@ -17,6 +17,9 @@ func TestRunBasicExample(t *testing.T) {
 		Testing:      t,
 		TerraformDir: basicExampleTerraformDir,
 		Prefix:       "s2s-basic",
+		TerraformVars: map[string]interface{}{
+			"prefix": options.Prefix,
+		},
 	})
 
 	output, err := options.RunTestConsistency()
