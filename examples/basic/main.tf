@@ -11,14 +11,33 @@ module "resource_group" {
 }
 
 ########################################################################################################################
-# COS instance
+# S2S Auth Module
 ########################################################################################################################
 
-resource "ibm_resource_instance" "cos_instance" {
-  name              = "${var.prefix}-cos"
-  resource_group_id = module.resource_group.resource_group_id
-  service           = "cloud-object-storage"
-  plan              = "standard"
-  location          = "global"
-  tags              = var.resource_tags
+locals {
+  # generate a service_map
+  service_map = [{
+    source_service_name         = "databases-for-postgresql"
+    target_service_name         = "kms"
+    roles                       = ["Reader"]
+    description                 = "This is a test policy"
+    source_resource_instance_id = null
+    target_resource_instance_id = null
+    source_resource_group_id    = module.resource_group.resource_group_id
+    target_resource_group_id    = module.resource_group.resource_group_id
+    }
+  ]
+  cbr_target_service_details = [{
+    target_service_name = "kms"
+    target_rg           = module.resource_group.resource_group_id
+    enforcement_mode    = "report"
+  }]
+}
+
+module "service_auth_cbr_rules" {
+  source                     = "../.."
+  service_map                = local.service_map
+  cbr_target_service_details = local.cbr_target_service_details
+  prefix                     = var.prefix
+  zone_service_ref_list      = ["databases-for-postgresql"]
 }

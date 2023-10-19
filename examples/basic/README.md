@@ -7,5 +7,7 @@ The text below should describe exactly what resources are provisioned / configur
 -->
 
 An end-to-end basic example that will provision the following:
+
 - A new resource group if one is not passed in.
-- A new Cloud Object Storage instance.
+- An authorization policy for databases-for-postgresql -> kms.
+- A cbr rule for kms in the resource group.
