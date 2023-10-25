@@ -5,12 +5,22 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 )
+
+const basicExampleTerraformDir = "examples/basic"
 
 func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
 
-	options := setupOptions(t, "mod-template-basic", "examples/basic")
+	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
+		Testing:      t,
+		TerraformDir: basicExampleTerraformDir,
+		Prefix:       "s2s-basic",
+		TerraformVars: map[string]interface{}{
+			"prefix": options.Prefix,
+		},
+	})
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")

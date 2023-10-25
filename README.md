@@ -1,20 +1,18 @@
 <!-- Update the title -->
-# Terraform Modules Template Project
+# Terraform IBM S2S Auth
 
 <!--
 Update status and "latest release" badges:
   1. For the status options, see https://github.ibm.com/GoldenEye/documentation/blob/master/status.md
   2. Update the "latest release" badge to point to the correct module's repo. Replace "module-template" in two places.
 -->
-[![Incubating (Not yet consumable)](https://img.shields.io/badge/status-Incubating%20(Not%20yet%20consumable)-red)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
+[![Stable (Adopted)](https://img.shields.io/badge/Status-Stable%20(Adopted)-yellowgreen?style=plastic)](https://terraform-ibm-modules.github.io/documentation/#/badge-status)
 [![latest release](https://img.shields.io/github/v/release/terraform-ibm-modules/terraform-ibm-s2s-auth?logo=GitHub&sort=semver)](https://github.com/terraform-ibm-modules/terraform-ibm-s2s-auth/releases/latest)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-<!-- Add a description of module(s) in this repo -->
-TODO: Replace me with description of the module(s) in this repo
-
+This module is responsible for generating authorization policies and CBR rules that enable access permissions and restrictions between a source service and a target service
 
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
@@ -49,38 +47,42 @@ unless real values don't help users know what to change.
 -->
 
 ```hcl
-
+module "service_auth_cbr_rules" {
+  # Replace "main" with a GIT release version to lock into a specific release
+  source                = "terraform-ibm-modules/s2s-auth/ibm"
+  version               = "X.X.X" # Replace "X.X.X" with a release version to lock into a specific release
+  service_map           = [
+    {
+        "description"= "This is a test auth policy",
+        "enforcement_mode"= "report",
+        "roles"= [
+            "Reader"
+        ],
+        "source_resource_instance_id"= "<source_resource_instance_id>",
+        "source_service_name"= "cloud-object-storage",
+        "target_resource_instance_id"= "<target_resource_instance_id>",
+        "target_service_name"= "kms"
+    },
+    {
+        "description"= "This is a test auth policy",
+        "enforcement_mode"= "report",
+        "roles"= [
+            "Reader"
+        ],
+        "source_rg"= "<source_rg>",
+        "source_service_name"= "containers-kubernetes",
+        "target_rg"= "<target_rg>",
+        "target_service_name"= "kms"
+    }
+  ]
+}
 ```
 
 ### Required IAM access policies
 
-<!-- PERMISSIONS REQUIRED TO RUN MODULE
-If this module requires permissions, uncomment the following block and update
-the sample permissions, following the format.
-Replace the sample Account and IBM Cloud service names and roles with the
-information in the console at
-Manage > Access (IAM) > Access groups > Access policies.
--->
-
-<!--
 You need the following permissions to run this module.
 
-- Account Management
-    - **Sample Account Service** service
-        - `Editor` platform access
-        - `Manager` service access
-    - IAM Services
-        - **Sample Cloud Service** service
-            - `Administrator` platform access
--->
-
-<!-- NO PERMISSIONS FOR MODULE
-If no permissions are required for the module, uncomment the following
-statement instead the previous block.
--->
-
-<!-- No permissions are needed to run this module.-->
-
+* You must have access to the target service to create an authorization between services. You can grant only the level of access that you have as a user of the target service. For example, if you have viewer access on the target service, you can assign only the viewer role for the authorization.
 
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -89,22 +91,36 @@ statement instead the previous block.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.6.0 |
+| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.56.1 |
 
 ### Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_cbr_rules"></a> [cbr\_rules](#module\_cbr\_rules) | terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile | 1.12.1 |
 
 ### Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [ibm_iam_authorization_policy.auth_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/iam_authorization_policy) | resource |
 
 ### Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created | <pre>list(object({<br>    target_service_name = string<br>    target_rg           = optional(string)<br>    enforcement_mode    = string<br>    tags                = optional(list(string))<br>  }))</pre> | `[]` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to append when creating CBR zones and CBR rules | `string` | `null` | no |
+| <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of source service and the corresponding target service details | <pre>list(object({<br>    source_service_name         = string<br>    target_service_name         = string<br>    roles                       = list(string)<br>    description                 = optional(string, null)<br>    source_resource_instance_id = optional(string, null)<br>    target_resource_instance_id = optional(string, null)<br>    source_resource_group_id    = optional(string, null)<br>    target_resource_group_id    = optional(string, null)<br>  }))</pre> | `[]` | no |
+| <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation | `list(string)` | `[]` | no |
+| <a name="input_zone_vpc_crn_list"></a> [zone\_vpc\_crn\_list](#input\_zone\_vpc\_crn\_list) | VPC CRN for the zones | `list(string)` | `[]` | no |
 
 ### Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_auth_policies"></a> [auth\_policies](#output\_auth\_policies) | Authorizations created |
+| <a name="output_cbr_rules"></a> [cbr\_rules](#output\_cbr\_rules) | CBR Rules created |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 <!-- Leave this section as is so that your module has a link to local development environment set up steps for contributors to follow -->

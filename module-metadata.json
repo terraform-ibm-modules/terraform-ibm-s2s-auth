@@ -1,12 +1,219 @@
 {
   "path": ".",
-  "variables": {},
-  "outputs": {},
+  "variables": {
+    "cbr_target_service_details": {
+      "name": "cbr_target_service_details",
+      "type": "list(object({\n    target_service_name = string\n    target_rg           = optional(string)\n    enforcement_mode    = string\n    tags                = optional(list(string))\n  }))",
+      "description": "Details of the target service for which the rule has to be created",
+      "default": [],
+      "source": [
+        "module.cbr_rules"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 72
+      }
+    },
+    "prefix": {
+      "name": "prefix",
+      "type": "string",
+      "description": "Prefix to append when creating CBR zones and CBR rules",
+      "default": "serviceprofile",
+      "source": [
+        "module.cbr_rules.module.cbr_rule.ibm_cbr_rule.cbr_rule.description"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 5
+      },
+      "max_length": 300,
+      "matches": "^[\\x20-\\xFE]*$"
+    },
+    "service_map": {
+      "name": "service_map",
+      "type": "list(object({\n    source_service_name         = string\n    target_service_name         = string\n    roles                       = list(string)\n    description                 = optional(string, null)\n    source_resource_instance_id = optional(string, null)\n    target_resource_instance_id = optional(string, null)\n    source_resource_group_id    = optional(string, null)\n    target_resource_group_id    = optional(string, null)\n  }))",
+      "description": "Map of source service and the corresponding target service details",
+      "default": [],
+      "source": [
+        "ibm_iam_authorization_policy.auth_policies.count",
+        "ibm_iam_authorization_policy.auth_policies.description",
+        "ibm_iam_authorization_policy.auth_policies.roles",
+        "ibm_iam_authorization_policy.auth_policies.source_resource_group_id",
+        "ibm_iam_authorization_policy.auth_policies.source_resource_instance_id",
+        "ibm_iam_authorization_policy.auth_policies.source_service_name",
+        "ibm_iam_authorization_policy.auth_policies.target_resource_group_id",
+        "ibm_iam_authorization_policy.auth_policies.target_resource_instance_id",
+        "ibm_iam_authorization_policy.auth_policies.target_service_name"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 11
+      }
+    },
+    "zone_service_ref_list": {
+      "name": "zone_service_ref_list",
+      "type": "list(string)",
+      "description": "Service reference for the zone creation",
+      "default": [],
+      "source": [
+        "module.cbr_rules"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 83
+      }
+    },
+    "zone_vpc_crn_list": {
+      "name": "zone_vpc_crn_list",
+      "type": "list(string)",
+      "description": "VPC CRN for the zones",
+      "default": [],
+      "source": [
+        "module.cbr_rules"
+      ],
+      "pos": {
+        "filename": "variables.tf",
+        "line": 89
+      }
+    }
+  },
+  "outputs": {
+    "auth_policies": {
+      "name": "auth_policies",
+      "description": "Authorizations created",
+      "value": "resource.ibm_iam_authorization_policy.auth_policies",
+      "pos": {
+        "filename": "outputs.tf",
+        "line": 10
+      }
+    },
+    "cbr_rules": {
+      "name": "cbr_rules",
+      "description": "CBR Rules created",
+      "value": "module.cbr_rules",
+      "pos": {
+        "filename": "outputs.tf",
+        "line": 5
+      }
+    }
+  },
   "required_core": [
     "\u003e= 1.3.0, \u003c1.6.0"
   ],
-  "required_providers": {},
-  "managed_resources": {},
+  "required_providers": {
+    "ibm": {
+      "source": "IBM-Cloud/ibm",
+      "version_constraints": [
+        "\u003e= 1.56.1"
+      ]
+    }
+  },
+  "managed_resources": {
+    "ibm_iam_authorization_policy.auth_policies": {
+      "mode": "managed",
+      "type": "ibm_iam_authorization_policy",
+      "name": "auth_policies",
+      "attributes": {
+        "count": "service_map",
+        "description": "service_map",
+        "roles": "service_map",
+        "source_resource_group_id": "service_map",
+        "source_resource_instance_id": "service_map",
+        "source_service_name": "service_map",
+        "target_resource_group_id": "service_map",
+        "target_resource_instance_id": "service_map",
+        "target_service_name": "service_map"
+      },
+      "provider": {
+        "name": "ibm"
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 5
+      }
+    }
+  },
   "data_resources": {},
-  "module_calls": {}
+  "module_calls": {
+    "cbr_rules": {
+      "name": "cbr_rules",
+      "source": "terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile",
+      "version": "1.12.1",
+      "attributes": {
+        "prefix": "prefix",
+        "target_service_details": "cbr_target_service_details",
+        "zone_service_ref_list": "zone_service_ref_list",
+        "zone_vpc_crn_list": "zone_vpc_crn_list"
+      },
+      "managed_resources": {},
+      "data_resources": {
+        "data.ibm_iam_account_settings.iam_account_settings": {
+          "mode": "data",
+          "type": "ibm_iam_account_settings",
+          "name": "iam_account_settings",
+          "provider": {
+            "name": "ibm"
+          },
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/main.tf",
+            "line": 4
+          }
+        }
+      },
+      "outputs": {
+        "rule_crns": {
+          "name": "rule_crns",
+          "description": "CBR rule crn(s)",
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/outputs.tf",
+            "line": 25
+          }
+        },
+        "rule_hrefs": {
+          "name": "rule_hrefs",
+          "description": "CBR rule href(s)",
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/outputs.tf",
+            "line": 30
+          }
+        },
+        "rule_ids": {
+          "name": "rule_ids",
+          "description": "CBR rule id(s)",
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/outputs.tf",
+            "line": 20
+          }
+        },
+        "zone_crns": {
+          "name": "zone_crns",
+          "description": "CBR zone crn(s)",
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/outputs.tf",
+            "line": 10
+          }
+        },
+        "zone_hrefs": {
+          "name": "zone_hrefs",
+          "description": "CBR zone href(s)",
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/outputs.tf",
+            "line": 15
+          }
+        },
+        "zone_ids": {
+          "name": "zone_ids",
+          "description": "CBR zone resource instance id(s)",
+          "pos": {
+            "filename": ".terraform/modules/cbr_rules/modules/cbr-service-profile/outputs.tf",
+            "line": 5
+          }
+        }
+      },
+      "pos": {
+        "filename": "main.tf",
+        "line": 17
+      }
+    }
+  }
 }

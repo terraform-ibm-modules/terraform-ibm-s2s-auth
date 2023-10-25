@@ -2,22 +2,17 @@
 # Outputs
 ##############################################################################
 
-output "region" {
-  description = "The region all resources were provisioned in"
-  value       = var.region
+output "cos_instance" {
+  description = "COS instance"
+  value       = module.resource_group.resource_group_id
 }
 
-output "prefix" {
-  description = "The prefix used to name all provisioned resources"
-  value       = var.prefix
+output "key_protect_instance_guid" {
+  description = "Key protect instance"
+  value       = module.key_protect_instance.key_protect_guid
 }
 
-output "resource_group_name" {
-  description = "The name of the resource group used"
-  value       = var.resource_group
-}
-
-output "resource_tags" {
-  description = "List of resource tags"
-  value       = var.resource_tags
+output "service_auth_cbr_rules" {
+  description = "Details of rules created"
+  value       = module.service_auth_cbr_rules
 }
