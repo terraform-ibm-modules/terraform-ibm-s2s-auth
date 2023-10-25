@@ -49,7 +49,7 @@ unless real values don't help users know what to change.
 ```hcl
 module "service_auth_cbr_rules" {
   # Replace "main" with a GIT release version to lock into a specific release
-  source                = "terraform-ibm-modules/terraform-ibm-s2s-auth/ibm"
+  source                = "terraform-ibm-modules/s2s-auth/ibm"
   version               = "X.X.X" # Replace "X.X.X" with a release version to lock into a specific release
   service_map           = [
     {
