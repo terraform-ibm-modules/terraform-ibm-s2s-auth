@@ -1,35 +1,35 @@
 variable "ibmcloud_api_key" {
   type        = string
-  description = "The IBM Cloud API Key"
+  description = "An IBM Cloud API key."
   sensitive   = true
 }
 
 variable "region" {
   type        = string
-  description = "Region to provision all resources created by this example"
+  description = "The region to provision all resources created by this example."
   default     = "us-south"
 }
 
 variable "prefix" {
   type        = string
-  description = "Prefix to append to all resources created by this example"
+  description = "The prefix for the resources created by this example."
   default     = "complete-s2s"
 }
 
 variable "resource_group" {
   type        = string
-  description = "An existing resource group name to use for this example, if unset a new resource group will be created"
+  description = "The name of an existing resource group to provision the resources in. If not set, a resource group is created with the prefix variable."
   default     = null
 }
 
 variable "resource_tags" {
   type        = list(string)
-  description = "Optional list of tags to be added to created resources"
+  description = "Optional list of tags to add to new resources"
   default     = []
 }
 
 variable "enforcement_mode" {
   type        = string
-  description = "The rule enforcement mode"
+  description = "The CBR rule enforcement mode."
   default     = "report"
 }
