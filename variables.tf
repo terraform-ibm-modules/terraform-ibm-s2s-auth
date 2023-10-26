@@ -4,12 +4,12 @@
 
 variable "prefix" {
   type        = string
-  description = "Prefix to append when creating CBR zones and CBR rules"
+  description = "Prefix for new CBR zones and rules."
   default     = null
 }
 
 variable "service_map" {
-  description = "Map of source service and the corresponding target service details"
+  description = "Map of source service and the corresponding target service details."
   type = list(object({
     source_service_name         = string
     target_service_name         = string
@@ -47,7 +47,7 @@ variable "service_map" {
         "kms", "internet-svcs", "atracker", "sql-query", "hs-crypto", "server-protect"],
       service.target_service_name)
     ])
-    error_message = "Provide a valid service for auth policy creation"
+    error_message = "Provide a valid service for authorization policy creation."
   }
 
   validation {
@@ -76,18 +76,18 @@ variable "cbr_target_service_details" {
     enforcement_mode    = string
     tags                = optional(list(string))
   }))
-  description = "Details of the target service for which the rule has to be created"
+  description = "Details of the target service for which the rule has to be created."
   default     = []
 }
 
 variable "zone_service_ref_list" {
   type        = list(string)
   default     = []
-  description = "Service reference for the zone creation"
+  description = "Service reference for the zone creation."
 }
 
 variable "zone_vpc_crn_list" {
   type        = list(string)
   default     = []
-  description = "VPC CRN for the zones"
+  description = "CRN of the VPC for the zones."
 }

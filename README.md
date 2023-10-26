@@ -1,5 +1,5 @@
 <!-- Update the title -->
-# Terraform IBM S2S Auth
+# Terraform IBM Service-to-service authorization module
 
 <!--
 Update status and "latest release" badges:
@@ -12,7 +12,7 @@ Update status and "latest release" badges:
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-This module is responsible for generating authorization policies and CBR rules that enable access permissions and restrictions between a source service and a target service
+This module generates authorization policies and context-based restriction (CBR) rules to enable access and restrictions between a source service and a target service.
 
 <!-- Below content is automatically populated via pre-commit hook -->
 <!-- BEGIN OVERVIEW HOOK -->
@@ -109,11 +109,11 @@ You need the following permissions to run this module.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created | <pre>list(object({<br>    target_service_name = string<br>    target_rg           = optional(string)<br>    enforcement_mode    = string<br>    tags                = optional(list(string))<br>  }))</pre> | `[]` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to append when creating CBR zones and CBR rules | `string` | `null` | no |
-| <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of source service and the corresponding target service details | <pre>list(object({<br>    source_service_name         = string<br>    target_service_name         = string<br>    roles                       = list(string)<br>    description                 = optional(string, null)<br>    source_resource_instance_id = optional(string, null)<br>    target_resource_instance_id = optional(string, null)<br>    source_resource_group_id    = optional(string, null)<br>    target_resource_group_id    = optional(string, null)<br>  }))</pre> | `[]` | no |
-| <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation | `list(string)` | `[]` | no |
-| <a name="input_zone_vpc_crn_list"></a> [zone\_vpc\_crn\_list](#input\_zone\_vpc\_crn\_list) | VPC CRN for the zones | `list(string)` | `[]` | no |
+| <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created. | <pre>list(object({<br>    target_service_name = string<br>    target_rg           = optional(string)<br>    enforcement_mode    = string<br>    tags                = optional(list(string))<br>  }))</pre> | `[]` | no |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for new CBR zones and rules. | `string` | `null` | no |
+| <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of source service and the corresponding target service details. | <pre>list(object({<br>    source_service_name         = string<br>    target_service_name         = string<br>    roles                       = list(string)<br>    description                 = optional(string, null)<br>    source_resource_instance_id = optional(string, null)<br>    target_resource_instance_id = optional(string, null)<br>    source_resource_group_id    = optional(string, null)<br>    target_resource_group_id    = optional(string, null)<br>  }))</pre> | `[]` | no |
+| <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation. | `list(string)` | `[]` | no |
+| <a name="input_zone_vpc_crn_list"></a> [zone\_vpc\_crn\_list](#input\_zone\_vpc\_crn\_list) | CRN of the VPC for the zones. | `list(string)` | `[]` | no |
 
 ### Outputs
 

@@ -6,8 +6,8 @@ Note, there is a pre-commit hook that will take the title of each example and in
 The text below should describe exactly what resources are provisioned / configured by the example.
 -->
 
-An end-to-end basic example that will provision the following:
+An end-to-end basic example that provisions the following resources:
 
-- A new resource group if one is not passed in.
-- An authorization policy for databases-for-postgresql -> kms.
-- A cbr rule for kms in the resource group.
+- A new resource group, if one is not passed in.
+- An authorization policy between the IBM Cloud Databases for PostgreSQL and Key Protect services.
+- A context-based restriction (CBR) rule for Key Protect in the resource group.
