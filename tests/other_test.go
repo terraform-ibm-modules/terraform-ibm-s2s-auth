@@ -16,9 +16,8 @@ func TestRunBasicExample(t *testing.T) {
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
 		Testing:      t,
 		TerraformDir: basicExampleTerraformDir,
-		Prefix:       "s2s-basic",
 		TerraformVars: map[string]interface{}{
-			"prefix": options.Prefix,
+			"prefix": "s2s-basic",
 		},
 	})
 
