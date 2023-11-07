@@ -14,12 +14,13 @@ func TestRunBasicExample(t *testing.T) {
 	t.Parallel()
 
 	options := testhelper.TestOptionsDefault(&testhelper.TestOptions{
-		Testing:      t,
-		TerraformDir: basicExampleTerraformDir,
-		TerraformVars: map[string]interface{}{
-			"prefix": "s2s-basic",
-		},
+		Testing:       t,
+		TerraformDir:  basicExampleTerraformDir,
+		Prefix:        "s2s-basic",
+		TerraformVars: map[string]interface{}{},
 	})
+
+	options.TerraformVars["prefix"] = options.Prefix
 
 	output, err := options.RunTestConsistency()
 	assert.Nil(t, err, "This should not have errored")
