@@ -25,4 +25,4 @@ repository:
   description: "This module is to set up a list of s2s authorization policies, and cbr rules"
 
   # Use a comma-separated list of topics to set on the repo.
-  topics: terraform, ibm-cloud, terraform-module, core-team, s2s-auth, iam, supported
+  topics: terraform, ibm-cloud, terraform-module, core-team, s2s-auth, iam, supported, graduated
