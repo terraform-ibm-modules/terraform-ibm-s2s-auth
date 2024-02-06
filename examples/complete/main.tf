@@ -17,7 +17,7 @@ module "resource_group" {
 # Create COS instance
 module "cos_instance" {
   source                 = "terraform-ibm-modules/cos/ibm"
-  version                = "7.1.5"
+  version                = "7.2.2"
   cos_instance_name      = "${var.prefix}-cos"
   kms_encryption_enabled = false
   retention_enabled      = false
@@ -28,7 +28,7 @@ module "cos_instance" {
 # Create Key Protect instance
 module "key_protect_instance" {
   source            = "terraform-ibm-modules/key-protect/ibm"
-  version           = "2.4.1"
+  version           = "2.5.1"
   key_protect_name  = "${var.prefix}-key-protect"
   resource_group_id = module.resource_group.resource_group_id
   plan              = "tiered-pricing"
@@ -49,8 +49,8 @@ locals {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "This is a test policy"
-      source_resource_instance_id = module.cos_instance.cos_instance_id
+      description                 = "This is a test policy locked to 2 instance IDs"
+      source_resource_instance_id = module.cos_instance.cos_instance_guid
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
       source_resource_group_id    = null
       target_resource_group_id    = null
@@ -59,7 +59,7 @@ locals {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "This is a test policy"
+      description                 = "This is a test policy locked to target instance ID"
       source_resource_instance_id = null
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
       source_resource_group_id    = module.resource_group.resource_group_id
@@ -69,8 +69,8 @@ locals {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "This is a test policy"
-      source_resource_instance_id = module.cos_instance.cos_instance_id
+      description                 = "This is a test policy locked to source instance ID"
+      source_resource_instance_id = module.cos_instance.cos_instance_guid
       target_resource_instance_id = null
       source_resource_group_id    = null
       target_resource_group_id    = module.resource_group.resource_group_id

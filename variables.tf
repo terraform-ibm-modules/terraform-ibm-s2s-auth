@@ -67,6 +67,22 @@ variable "service_map" {
     ])
     error_message = "target_resource_instance_id and target_resource_group_id are mutually exlusive, please only provide one of the values"
   }
+
+  validation {
+    condition = alltrue([
+      for service in var.service_map :
+      service.target_resource_instance_id != null ? can(regex("^[a-zA-Z0-9-]*$", service.target_resource_instance_id)) : true
+    ])
+    error_message = "target_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
+  }
+
+  validation {
+    condition = alltrue([
+      for service in var.service_map :
+      service.source_resource_instance_id != null ? can(regex("^[a-zA-Z0-9-]*$", service.source_resource_instance_id)) : true
+    ])
+    error_message = "source_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
+  }
 }
 
 variable "cbr_target_service_details" {
