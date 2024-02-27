@@ -57,9 +57,9 @@ module "service_auth_cbr_rules" {
         "roles"= [
             "Reader"
         ],
-        "source_resource_instance_id"= "<source_resource_instance_id>",
+        "source_resource_instance_id"= "<source_resource_instance_guid>",
         "source_service_name"= "cloud-object-storage",
-        "target_resource_instance_id"= "<target_resource_instance_id>",
+        "target_resource_instance_id"= "<target_resource_instance_guid>",
         "target_service_name"= "kms"
     },
     {
