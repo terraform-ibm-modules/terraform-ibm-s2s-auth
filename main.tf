@@ -16,8 +16,7 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
 
 module "cbr_rules" {
   source                 = "terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile"
-  version                = "1.22.2"
-  location               = null
+  version                = "1.23.0"
   target_service_details = var.cbr_target_service_details
   zone_vpc_crn_list      = var.zone_vpc_crn_list
   zone_service_ref_list  = var.zone_service_ref_list

@@ -39,5 +39,5 @@ module "service_auth_cbr_rules" {
   service_map                = local.service_map
   cbr_target_service_details = local.cbr_target_service_details
   prefix                     = var.prefix
-  zone_service_ref_list      = ["databases-for-postgresql"]
+  zone_service_ref_list      = { "databases-for-postgresql" = {} }
 }
