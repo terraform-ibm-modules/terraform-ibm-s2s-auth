@@ -97,8 +97,10 @@ variable "cbr_target_service_details" {
 }
 
 variable "zone_service_ref_list" {
-  type        = list(string)
-  default     = []
+  type = map(object({
+    service_ref_location = optional(list(string), [])
+  }))
+  default     = {}
   description = "Service reference for the zone creation."
 }
 
