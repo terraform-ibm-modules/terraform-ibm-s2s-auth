@@ -17,7 +17,7 @@ module "resource_group" {
 # Create COS instance
 module "cos_instance" {
   source                 = "terraform-ibm-modules/cos/ibm"
-  version                = "8.5.1"
+  version                = "8.9.2"
   cos_instance_name      = "${var.prefix}-cos"
   kms_encryption_enabled = false
   retention_enabled      = false
@@ -28,7 +28,7 @@ module "cos_instance" {
 # Create Key Protect instance
 module "key_protect_instance" {
   source            = "terraform-ibm-modules/key-protect/ibm"
-  version           = "2.7.2"
+  version           = "2.8.1"
   key_protect_name  = "${var.prefix}-key-protect"
   resource_group_id = module.resource_group.resource_group_id
   plan              = "tiered-pricing"
