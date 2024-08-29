@@ -89,14 +89,14 @@ You need the following permissions to run this module.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0, <1.7.0 |
-| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.56.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
+| <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.65.0, <2.0.0 |
 
 ### Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cbr_rules"></a> [cbr\_rules](#module\_cbr\_rules) | terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile | 1.22.1 |
+| <a name="module_cbr_rules"></a> [cbr\_rules](#module\_cbr\_rules) | terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile | 1.23.0 |
 
 ### Resources
 
@@ -111,7 +111,7 @@ You need the following permissions to run this module.
 | <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created. | <pre>list(object({<br>    target_service_name = string<br>    target_rg           = optional(string)<br>    enforcement_mode    = string<br>    tags                = optional(list(string))<br>  }))</pre> | `[]` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for new CBR zones and rules. | `string` | `null` | no |
 | <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of source service and the corresponding target service details. | <pre>list(object({<br>    source_service_name         = string<br>    target_service_name         = string<br>    roles                       = list(string)<br>    description                 = optional(string, null)<br>    source_resource_instance_id = optional(string, null)<br>    target_resource_instance_id = optional(string, null)<br>    source_resource_group_id    = optional(string, null)<br>    target_resource_group_id    = optional(string, null)<br>  }))</pre> | `[]` | no |
-| <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation. | `list(string)` | `[]` | no |
+| <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation. | <pre>map(object({<br>    service_ref_location = optional(list(string), [])<br>  }))</pre> | `{}` | no |
 | <a name="input_zone_vpc_crn_list"></a> [zone\_vpc\_crn\_list](#input\_zone\_vpc\_crn\_list) | CRN of the VPC for the zones. | `list(string)` | `[]` | no |
 
 ### Outputs
