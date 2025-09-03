@@ -65,7 +65,7 @@ variable "service_map" {
       ((service.target_resource_instance_id != null && service.target_resource_group_id == null) ||
       (service.target_resource_instance_id == null && service.target_resource_group_id != null))
     ])
-    error_message = "target_resource_instance_id and target_resource_group_id are mutually exlusive, please only provide one of the values"
+    error_message = "target_resource_instance_id and target_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
   validation {
