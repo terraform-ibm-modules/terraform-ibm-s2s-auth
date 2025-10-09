@@ -92,6 +92,7 @@
               "role_crns": [
                 "crn:v1:bluemix:public:iam::::role:Editor"
               ],
+              "service_name": "",
               "notes": "The user must have at least Editor access to the target service."
             }
           ],
