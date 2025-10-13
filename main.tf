@@ -5,7 +5,7 @@
 locals {
   service_map_by_key = {
     for idx, svc in var.service_map :
-    "${svc.source_service_name}-${svc.target_service_name}-${idx}" => svc
+    "${svc.source_service_name}-${svc.target_service_name}-${idx+1}" => svc
   }
 }
 
