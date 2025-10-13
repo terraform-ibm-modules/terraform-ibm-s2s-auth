@@ -52,6 +52,7 @@ variable "service_map" {
     target_service_name         = string
     roles                       = list(string)
     description                 = optional(string, null)
+    source_service_account_id   = optional(string, null)
     source_resource_instance_id = optional(string, null)
     target_resource_instance_id = optional(string, null)
     source_resource_group_id    = optional(string, null)
@@ -102,7 +103,7 @@ variable "service_map" {
       ((service.target_resource_instance_id != null && service.target_resource_group_id == null) ||
       (service.target_resource_instance_id == null && service.target_resource_group_id != null))
     ])
-    error_message = "target_resource_instance_id and target_resource_group_id are mutually exlusive, please only provide one of the values"
+    error_message = "target_resource_instance_id and target_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
   validation {
@@ -149,4 +150,10 @@ variable "zone_vpc_crn_list" {
   type        = list(string)
   default     = []
   description = "CRN of the VPC for the zones."
+}
+
+variable "enable_cbr" {
+  type        = bool
+  default     = false
+  description = "Flag to enable CBR"
 }

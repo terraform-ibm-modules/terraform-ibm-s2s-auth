@@ -75,6 +75,10 @@
               "required": false
             },
             {
+              "key": "enable_cbr",
+              "required": false
+            },
+            {
               "key": "cbr_target_service_details",
               "required": false
             },
