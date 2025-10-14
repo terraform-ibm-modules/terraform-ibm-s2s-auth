@@ -73,22 +73,6 @@
             {
               "key": "region",
               "required": false
-            },
-            {
-              "key": "enable_cbr",
-              "required": false
-            },
-            {
-              "key": "cbr_target_service_details",
-              "required": false
-            },
-            {
-              "key": "zone_service_ref_list",
-              "required": false
-            },
-            {
-              "key": "zone_vpc_crn_list",
-              "required": false
             }
           ],
           "iam_permissions": [

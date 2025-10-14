@@ -9,8 +9,8 @@ variable "prefix" {
 }
 
 variable "service_map" {
-  description = "Map of source service and the corresponding target service details."
-  type = list(object({
+  description = "Map of unique service pairs and their authorization config."
+  type = map(object({
     source_service_name         = string
     target_service_name         = string
     roles                       = list(string)
@@ -21,66 +21,38 @@ variable "service_map" {
     source_resource_group_id    = optional(string, null)
     target_resource_group_id    = optional(string, null)
   }))
-  default = []
+  default = {}
 
   validation {
     condition = alltrue([
-      for service in var.service_map :
-      contains(["iam-groups", "iam-access-management", "iam-identity",
-        "user-management", "cloud-object-storage", "codeengine",
-        "container-registry", "databases-for-cassandra",
-        "databases-for-enterprisedb", "databases-for-elasticsearch",
-        "databases-for-etcd", "databases-for-mongodb",
-        "databases-for-mysql", "databases-for-postgresql", "databases-for-redis",
-        "directlink", "dns-svcs", "messagehub", "kms", "containers-kubernetes",
-        "messages-for-rabbitmq", "secrets-manager", "transit", "is",
-        "schematics", "apprapp", "event-notifications", "compliance", "kms", "atracker", "sql-query", "hs-crypto", "server-protect"],
-      service.source_service_name) &&
-      contains(["iam-groups", "iam-access-management", "iam-identity",
-        "user-management", "cloud-object-storage", "codeengine",
-        "container-registry", "databases-for-cassandra",
-        "databases-for-enterprisedb", "databases-for-elasticsearch",
-        "databases-for-etcd", "databases-for-mongodb",
-        "databases-for-mysql", "databases-for-postgresql", "databases-for-redis",
-        "directlink", "dns-svcs", "messagehub", "kms", "containers-kubernetes",
-        "messages-for-rabbitmq", "secrets-manager", "transit", "is",
-        "schematics", "apprapp", "event-notifications", "compliance",
-        "kms", "internet-svcs", "atracker", "sql-query", "hs-crypto", "server-protect"],
-      service.target_service_name)
-    ])
-    error_message = "Provide a valid service for authorization policy creation."
-  }
-
-  validation {
-    condition = alltrue([
-      for service in var.service_map :
-      ((service.source_resource_instance_id != null && service.source_resource_group_id == null) ||
-      (service.source_resource_instance_id == null && service.source_resource_group_id != null))
+      for svc in values(var.service_map) :
+      ((svc.source_resource_instance_id != null && svc.source_resource_group_id == null) ||
+      (svc.source_resource_instance_id == null && svc.source_resource_group_id != null))
     ])
     error_message = "source_resource_instance_id and source_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
   validation {
     condition = alltrue([
-      for service in var.service_map :
-      ((service.target_resource_instance_id != null && service.target_resource_group_id == null) ||
-      (service.target_resource_instance_id == null && service.target_resource_group_id != null))
+      for svc in values(var.service_map) :
+      ((svc.target_resource_instance_id != null && svc.target_resource_group_id == null) ||
+      (svc.target_resource_instance_id == null && svc.target_resource_group_id != null))
     ])
     error_message = "target_resource_instance_id and target_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
   validation {
     condition = alltrue([
-      for service in var.service_map :
-      service.target_resource_instance_id != null ? can(regex("^[a-zA-Z0-9-]*$", service.target_resource_instance_id)) : true
+      for svc in values(var.service_map) :
+      svc.target_resource_instance_id != null ? can(regex("^[a-zA-Z0-9-]*$", svc.target_resource_instance_id)) : true
     ])
     error_message = "target_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
   }
 
   validation {
     condition = alltrue([
-      for service in var.service_map :
-      service.source_resource_instance_id != null ? can(regex("^[a-zA-Z0-9-]*$", service.source_resource_instance_id)) : true
+      for svc in values(var.service_map) :
+      svc.source_resource_instance_id != null ? can(regex("^[a-zA-Z0-9-]*$", svc.source_resource_instance_id)) : true
     ])
     error_message = "source_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
   }
@@ -113,6 +85,7 @@ variable "zone_vpc_crn_list" {
 
 variable "enable_cbr" {
   type        = bool
-  default     = false
+  default     = true
   description = "Flag to enable CBR"
+  nullable    = false
 }

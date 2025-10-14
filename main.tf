@@ -2,15 +2,8 @@
 # Service To Service Authorization Policies
 ##############################################################################
 
-locals {
-  service_map_by_key = {
-    for idx, svc in var.service_map :
-    "${svc.source_service_name}-${svc.target_service_name}-${idx + 1}" => svc
-  }
-}
-
 resource "ibm_iam_authorization_policy" "auth_policies" {
-  for_each                    = local.service_map_by_key
+  for_each                    = var.service_map
   source_service_name         = each.value.source_service_name
   target_service_name         = each.value.target_service_name
   roles                       = each.value.roles
