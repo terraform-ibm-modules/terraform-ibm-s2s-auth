@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testhelper"
 	"github.com/terraform-ibm-modules/ibmcloud-terratest-wrapper/testschematic"
@@ -49,6 +50,9 @@ func TestRunUpgradeExample(t *testing.T) {
 func TestFullyConfigurableDAInSchematics(t *testing.T) {
 	t.Parallel()
 
+	srcRGUUID := uuid.NewString()
+	tgtRGUUID := uuid.NewString()
+
 	// Sample data for s2s authorisation service map
 	serviceMap := map[string]interface{}{
 		"test-policy-1": map[string]interface{}{
@@ -56,8 +60,8 @@ func TestFullyConfigurableDAInSchematics(t *testing.T) {
 			"target_service_name":      "kms",
 			"roles":                    []string{"Reader"},
 			"description":              "This is a test policy",
-			"source_resource_group_id": "be19bxxxxxxxxxxx83ea90c7d",
-			"target_resource_group_id": "be19bxxxxxxxxxxx83ea90c7d",
+			"source_resource_group_id": srcRGUUID,
+			"target_resource_group_id": tgtRGUUID,
 		},
 	}
 
@@ -82,7 +86,7 @@ func TestFullyConfigurableDAInSchematics(t *testing.T) {
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
-		{Name: "service_map", Value: string(serviceMapJSON), DataType: "map(object{})"},
+		{Name: "service_map", Value: string(serviceMapJSON), DataType: "map(object)"},
 	}
 
 	err = options.RunSchematicTest()
