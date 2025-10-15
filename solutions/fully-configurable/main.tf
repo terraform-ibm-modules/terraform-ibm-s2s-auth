@@ -1,4 +1,4 @@
-module "service_auth_cbr_rules" {
+module "service_auth_policy" {
   source      = "../.."
   prefix      = var.prefix
   service_map = var.service_map
