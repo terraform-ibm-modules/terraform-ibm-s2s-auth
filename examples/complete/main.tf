@@ -44,8 +44,8 @@ resource "ibm_is_vpc" "vpc_instance" {
 
 # generate a service_map
 locals {
-  service_map = [
-    {
+  service_map = {
+    "test-policy-1" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
@@ -54,8 +54,8 @@ locals {
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
       source_resource_group_id    = null
       target_resource_group_id    = null
-    },
-    {
+    }
+    "test-policy-2" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
@@ -64,8 +64,8 @@ locals {
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
       source_resource_group_id    = module.resource_group.resource_group_id
       target_resource_group_id    = null
-    },
-    {
+    }
+    "test-policy-3" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
@@ -75,7 +75,10 @@ locals {
       source_resource_group_id    = null
       target_resource_group_id    = module.resource_group.resource_group_id
     }
-  ]
+
+
+  }
+
   cbr_target_service_details = [
     {
       target_service_name = "kms"
@@ -88,6 +91,7 @@ locals {
 module "service_auth_cbr_rules" {
   source                     = "../.."
   service_map                = local.service_map
+  enable_cbr                 = var.enable_cbr
   cbr_target_service_details = local.cbr_target_service_details
   prefix                     = var.prefix
   zone_vpc_crn_list          = [ibm_is_vpc.vpc_instance.crn]

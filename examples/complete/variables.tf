@@ -33,3 +33,10 @@ variable "enforcement_mode" {
   description = "The CBR rule enforcement mode."
   default     = "report"
 }
+
+variable "enable_cbr" {
+  type        = bool
+  default     = true
+  description = "Flag to enable CBR"
+  nullable    = false
+}

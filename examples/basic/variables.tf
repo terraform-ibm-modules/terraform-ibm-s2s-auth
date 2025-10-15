@@ -25,3 +25,10 @@ variable "resource_group" {
   description = "The name of an existing resource group to provision the resources in. If not set, a resource group is created with the prefix variable."
   default     = null
 }
+
+variable "enable_cbr" {
+  type        = bool
+  default     = true
+  description = "Flag to enable CBR"
+  nullable    = false
+}
