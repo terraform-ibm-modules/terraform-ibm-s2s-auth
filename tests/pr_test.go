@@ -2,6 +2,7 @@
 package test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,6 +49,23 @@ func TestRunUpgradeExample(t *testing.T) {
 func TestFullyConfigurableDAInSchematics(t *testing.T) {
 	t.Parallel()
 
+	// Sample data for s2s authorisation service map
+	serviceMap := map[string]interface{}{
+		"test-policy-1": map[string]interface{}{
+			"source_service_name":      "databases-for-postgresql",
+			"target_service_name":      "kms",
+			"roles":                    []string{"Reader"},
+			"description":              "This is a test policy",
+			"source_resource_group_id": "be19bxxxxxxxxxxx83ea90c7d",
+			"target_resource_group_id": "be19bxxxxxxxxxxx83ea90c7d",
+		},
+	}
+
+	serviceMapJSON, err := json.Marshal(serviceMap)
+	if err != nil {
+		t.Fatalf("Failed to marshal cbr_rules: %v", err)
+	}
+
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
 		Prefix:  "s2s-auth-da",
@@ -64,8 +82,9 @@ func TestFullyConfigurableDAInSchematics(t *testing.T) {
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
 		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+		{Name: "service_map", Value: string(serviceMapJSON), DataType: "map(object{})"},
 	}
 
-	err := options.RunSchematicTest()
+	err = options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
 }

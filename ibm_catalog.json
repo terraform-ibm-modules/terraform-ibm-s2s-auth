@@ -13,22 +13,17 @@
         "converged_infra"
       ],
       "keywords": [
-        "cbr",
         "s2s-auth",
         "service to service Authorisation",
-        "context based restrictions",
-        "context-based-restrictions",
         "zones",
         "rules",
-        "cbr zones",
-        "cbr rules",
         "IaC",
         "infrastructure as code",
         "terraform",
         "solution"
       ],
       "short_description": "Creates and configures Service to Service Authorisation.",
-      "long_description": "This deployable architecture is used to provision and configure [Service to Service Authorisation](https://cloud.ibm.com/iam/authorizations) and can also optionally configure [IBM Context Based Restrictions Network Zones](https://cloud.ibm.com/context-based-restrictions/zones) and [IBM Context Based Restrictions Rules](https://cloud.ibm.com/context-based-restrictions/rules).\n\n\n💡 This Terraform-based automation is part of a broader suite of IBM-maintained Infrastructure as Code (IaC) asset collection, each following the naming pattern \"Cloud automation for *servicename*\" and focusing on single IBM Cloud service. These single-service deployable architectures can be used on their own to streamline and automate service deployments through an [IaC approach](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-understanding-projects), or assembled together into a broader [automated IaC stack](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-config-stack) to automate the deployment of an end-to-end solution architecture.",
+      "long_description": "This deployable architecture is used to provision and configure [Service to Service Authorisation](https://cloud.ibm.com/iam/authorizations).\n\n\n💡 This Terraform-based automation is part of a broader suite of IBM-maintained Infrastructure as Code (IaC) asset collection, each following the naming pattern \"Cloud automation for *servicename*\" and focusing on single IBM Cloud service. These single-service deployable architectures can be used on their own to streamline and automate service deployments through an [IaC approach](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-understanding-projects), or assembled together into a broader [automated IaC stack](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-config-stack) to automate the deployment of an end-to-end solution architecture.",
       "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-s2s-auth/tree/main/solutions/fully-configurable/README.md",
       "offering_icon_url": "",
       "provider_name": "IBM",
@@ -36,14 +31,6 @@
         {
           "title": "Creates Service to Service Authorisation",
           "description": "For more details on Service to Service Authorisation, [see here](https://cloud.ibm.com/docs/account?topic=account-serviceauth&interface=terraform)."
-        },
-        {
-          "title": "Creates Context Based Restrictions Network Zones",
-          "description": "For more details on an Context Based Restrictions Network Zones, [see here](https://cloud.ibm.com/docs/account?topic=account-context-restrictions-create&interface=terraform#network-zones-create-terraform)."
-        },
-        {
-          "title": "Creates Context Based Restrictions Rules",
-          "description": "For more details on an Context Based Restrictions Rules, [see here](https://cloud.ibm.com/docs/account?topic=account-context-restrictions-create&interface=terraform#context-restrictions-create-rules-terra)."
         },
         {
           "title": "Creates Access Group Policies",
