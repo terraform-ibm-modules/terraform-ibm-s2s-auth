@@ -2,7 +2,7 @@
   "products": [
     {
       "name": "deploy-arch-ibm-s2s-auth",
-      "label": "Cloud automation for Service to Service Authorisation",
+      "label": "Cloud automation for service to service authorisation",
       "product_kind": "solution",
       "tags": [
         "ibm_created",
