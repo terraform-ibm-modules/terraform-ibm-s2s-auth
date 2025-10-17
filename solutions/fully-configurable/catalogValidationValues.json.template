@@ -1,14 +1,5 @@
 {
   "ibmcloud_api_key": $VALIDATION_APIKEY,
   "prefix": $PREFIX,
-  "service_map": {
-      "test-policy" : {
-      "source_service_name"         : "databases-for-postgresql",
-      "target_service_name"         : "kms",
-      "roles"                       : ["Reader"],
-      "description"                 : "This is a test policy for validation",
-      "source_resource_group_id"    :  $PREFIX,
-      "target_resource_group_id"    :  $PREFIX
-    }
-  }
+  "service_map": {}
 }
