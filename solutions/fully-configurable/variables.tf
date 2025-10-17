@@ -1,12 +1,16 @@
-########################################################################################################################
+##############################################################################
 # Input Variables
-########################################################################################################################
+##############################################################################
 
-variable "prefix" {
+variable "ibmcloud_api_key" {
   type        = string
-  description = "Prefix for new CBR zones and rules."
-  default     = null
+  description = "The IBM Cloud API Key."
+  sensitive   = true
 }
+
+##############################################################################
+# S2S Authorisation Variables
+##############################################################################
 
 variable "service_map" {
   description = "Map of unique service pairs and their authorization config."
@@ -56,36 +60,4 @@ variable "service_map" {
     ])
     error_message = "source_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
   }
-}
-
-variable "cbr_target_service_details" {
-  type = list(object({
-    target_service_name = string
-    target_rg           = optional(string)
-    enforcement_mode    = string
-    tags                = optional(list(string))
-  }))
-  description = "Details of the target service for which the rule has to be created."
-  default     = []
-}
-
-variable "zone_service_ref_list" {
-  type = map(object({
-    service_ref_location = optional(list(string), [])
-  }))
-  default     = {}
-  description = "Service reference for the zone creation."
-}
-
-variable "zone_vpc_crn_list" {
-  type        = list(string)
-  default     = []
-  description = "CRN of the VPC for the zones."
-}
-
-variable "enable_cbr" {
-  type        = bool
-  default     = true
-  description = "Set to true to enable creation of Context Based restrictions (CBR) for services defined in var.cbr_target_service_details. When true, var.zone_vpc_crn_list and var.zone_service_ref_list must be provided to create and attach the required CBR zones. When false, no CBR zones or rules are created."
-  nullable    = false
 }

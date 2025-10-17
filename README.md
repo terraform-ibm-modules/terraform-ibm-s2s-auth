@@ -50,8 +50,8 @@ unless real values don't help users know what to change.
 module "service_auth_cbr_rules" {
   source                = "terraform-ibm-modules/s2s-auth/ibm"
   version               = "X.X.X" # Replace "X.X.X" with a release version to lock into a specific release
-  service_map           = [
-    {
+  service_map           = {
+    "test-policy-1" = {
         "description"= "This is a test auth policy",
         "enforcement_mode"= "report",
         "roles"= [
@@ -62,7 +62,7 @@ module "service_auth_cbr_rules" {
         "target_resource_instance_id"= "<target_resource_instance_guid>",
         "target_service_name"= "kms"
     },
-    {
+    "test-policy-2" = {
         "description"= "This is a test auth policy",
         "enforcement_mode"= "report",
         "roles"= [
@@ -73,7 +73,7 @@ module "service_auth_cbr_rules" {
         "target_rg"= "<target_rg>",
         "target_service_name"= "kms"
     }
-  ]
+  }
 }
 ```
 
@@ -109,8 +109,9 @@ You need the following permissions to run this module.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created. | <pre>list(object({<br/>    target_service_name = string<br/>    target_rg           = optional(string)<br/>    enforcement_mode    = string<br/>    tags                = optional(list(string))<br/>  }))</pre> | `[]` | no |
+| <a name="input_enable_cbr"></a> [enable\_cbr](#input\_enable\_cbr) | Set to true to enable creation of Context Based restrictions (CBR) for services defined in var.cbr\_target\_service\_details. When true, var.zone\_vpc\_crn\_list and var.zone\_service\_ref\_list must be provided to create and attach the required CBR zones. When false, no CBR zones or rules are created. | `bool` | `true` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for new CBR zones and rules. | `string` | `null` | no |
-| <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of source service and the corresponding target service details. | <pre>list(object({<br/>    source_service_name         = string<br/>    target_service_name         = string<br/>    roles                       = list(string)<br/>    description                 = optional(string, null)<br/>    source_resource_instance_id = optional(string, null)<br/>    target_resource_instance_id = optional(string, null)<br/>    source_resource_group_id    = optional(string, null)<br/>    target_resource_group_id    = optional(string, null)<br/>  }))</pre> | `[]` | no |
+| <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of unique service pairs and their authorization config. | <pre>map(object({<br/>    source_service_name         = string<br/>    target_service_name         = string<br/>    roles                       = list(string)<br/>    description                 = optional(string, null)<br/>    source_service_account_id   = optional(string, null)<br/>    source_resource_instance_id = optional(string, null)<br/>    target_resource_instance_id = optional(string, null)<br/>    source_resource_group_id    = optional(string, null)<br/>    target_resource_group_id    = optional(string, null)<br/>  }))</pre> | `{}` | no |
 | <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation. | <pre>map(object({<br/>    service_ref_location = optional(list(string), [])<br/>  }))</pre> | `{}` | no |
 | <a name="input_zone_vpc_crn_list"></a> [zone\_vpc\_crn\_list](#input\_zone\_vpc\_crn\_list) | CRN of the VPC for the zones. | `list(string)` | `[]` | no |
 
