@@ -14,7 +14,7 @@
       ],
       "keywords": [
         "s2s-auth",
-        "service to service Authorisation",
+        "service to service authorisation",
         "zones",
         "rules",
         "IaC",
@@ -22,15 +22,15 @@
         "terraform",
         "solution"
       ],
-      "short_description": "Creates and configures Service to Service Authorisation.",
-      "long_description": "This deployable architecture is used to provision and configure [Service to Service Authorisation](https://cloud.ibm.com/iam/authorizations).\n\n\n💡 This Terraform-based automation is part of a broader suite of IBM-maintained Infrastructure as Code (IaC) asset collection, each following the naming pattern \"Cloud automation for *servicename*\" and focusing on single IBM Cloud service. These single-service deployable architectures can be used on their own to streamline and automate service deployments through an [IaC approach](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-understanding-projects), or assembled together into a broader [automated IaC stack](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-config-stack) to automate the deployment of an end-to-end solution architecture.",
+      "short_description": "Creates and configures service to service authorisation.",
+      "long_description": "This deployable architecture is used to provision and configure [service to service authorisation](https://cloud.ibm.com/iam/authorizations).\n\n\n💡 This Terraform-based automation is part of a broader suite of IBM-maintained Infrastructure as Code (IaC) asset collection, each following the naming pattern \"Cloud automation for *servicename*\" and focusing on single IBM Cloud service. These single-service deployable architectures can be used on their own to streamline and automate service deployments through an [IaC approach](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-understanding-projects), or assembled together into a broader [automated IaC stack](https://cloud.ibm.com/docs/secure-enterprise?topic=secure-enterprise-config-stack) to automate the deployment of an end-to-end solution architecture.",
       "offering_docs_url": "https://github.com/terraform-ibm-modules/terraform-ibm-s2s-auth/tree/main/solutions/fully-configurable/README.md",
       "offering_icon_url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-s2s-auth/refs/heads/main/images/s2s_icon.svg",
       "provider_name": "IBM",
       "features": [
         {
-          "title": "Creates Service to Service Authorisation",
-          "description": "For more details on Service to Service Authorisation, [see here](https://cloud.ibm.com/docs/account?topic=account-serviceauth&interface=terraform)."
+          "title": "Creates service to service authorisation",
+          "description": "For more details on service to service authorisation, [see here](https://cloud.ibm.com/docs/account?topic=account-serviceauth&interface=terraform)."
         },
         {
           "title": "Creates Access Group Policies",
@@ -51,7 +51,18 @@
             },
             {
               "key": "prefix",
-              "required": true
+              "required": true,
+              "default_value": "dev",
+              "random_string": {
+                "length": 4
+              },
+              "value_constraints": [
+                {
+                  "type": "regex",
+                  "description": "Prefix must begin with a lowercase letter and may contain only lowercase letters, digits, and hyphens '-'. It must not end with a hyphen ('-'), and cannot contain consecutive hyphens ('--'). It should not exceed 16 characters.",
+                  "value": "^$|^__NULL__$|^[a-z](?!.*--)(?:[a-z0-9-]{0,14}[a-z0-9])?$"
+                }
+              ]
             },
             {
               "key": "service_map",
@@ -77,11 +88,11 @@
             "diagrams": [
               {
                 "diagram": {
-                  "caption": "Service to Service Authorisation",
+                  "caption": "service to service authorisation",
                   "url": "https://raw.githubusercontent.com/terraform-ibm-modules/terraform-ibm-s2s-auth/refs/heads/main/reference-architecture/s2s-auth-policy.svg",
                   "type": "image/svg+xml"
                 },
-                "description": "This architecture supports creating and configuring Service to Service Authorisation."
+                "description": "This architecture supports creating and configuring service to service authorisation."
               }
             ]
           },
