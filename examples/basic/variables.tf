@@ -29,6 +29,6 @@ variable "resource_group" {
 variable "enable_cbr" {
   type        = bool
   default     = true
-  description = "Flag to enable CBR"
+  description = "Set to true to enable creation of Context Based restrictions (CBR) for services defined in var.cbr_target_service_details. When true, var.zone_vpc_crn_list and var.zone_service_ref_list must be provided to create and attach the required CBR zones. When false, no CBR zones or rules are created."
   nullable    = false
 }

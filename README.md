@@ -77,19 +77,6 @@ module "service_auth_cbr_rules" {
 }
 ```
 
-## v1 to v2 Migration Notes
-
-Significant changes were made to the input format for `service_map` between v1.x.x and v2.x.x, the array of objects is now a map of objects, which also changes how Terraform tracks the state of the policies internally (from integer index to string). Due to this change, Terraform will want to destroy the old policies and CBR rules and create them again using the new key values, which can cause a disruption.
-
-If you wish to avoid any policy destruction during the upgrade you can use the `terraform state mv` command to move the state of the old names to the new names you supply in the map input, as well as add the new integer assigned to the CBR module. This should allow you to upgrade with zero changes.
-
-For example, using the [Basic example](./examples/basic) as our solution, you would perform the following commands between v1 and v2 that will result in no changes made for the upgrade:
-```
-terraform state mv 'module.service_auth_cbr_rules.ibm_iam_authorization_policy.auth_policies[0]' 'module.service_auth_cbr_rules.ibm_iam_authorization_policy.auth_policies["test-1"]'
-
-terraform state mv 'module.service_auth_cbr_rules.module.cbr_rules' 'module.service_auth_cbr_rules.module.cbr_rules[0]'
-```
-
 ### Required IAM access policies
 
 You need the following permissions to run this module.
@@ -122,7 +109,7 @@ You need the following permissions to run this module.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created. | <pre>list(object({<br/>    target_service_name = string<br/>    target_rg           = optional(string)<br/>    enforcement_mode    = string<br/>    tags                = optional(list(string))<br/>  }))</pre> | `[]` | no |
-| <a name="input_enable_cbr"></a> [enable\_cbr](#input\_enable\_cbr) | Flag to enable CBR | `bool` | `true` | no |
+| <a name="input_enable_cbr"></a> [enable\_cbr](#input\_enable\_cbr) | Set to true to enable creation of Context Based restrictions (CBR) for services defined in var.cbr\_target\_service\_details. When true, var.zone\_vpc\_crn\_list and var.zone\_service\_ref\_list must be provided to create and attach the required CBR zones. When false, no CBR zones or rules are created. | `bool` | `true` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for new CBR zones and rules. | `string` | `null` | no |
 | <a name="input_service_map"></a> [service\_map](#input\_service\_map) | Map of unique service pairs and their authorization config. | <pre>map(object({<br/>    source_service_name         = string<br/>    target_service_name         = string<br/>    roles                       = list(string)<br/>    description                 = optional(string, null)<br/>    source_service_account_id   = optional(string, null)<br/>    source_resource_instance_id = optional(string, null)<br/>    target_resource_instance_id = optional(string, null)<br/>    source_resource_group_id    = optional(string, null)<br/>    target_resource_group_id    = optional(string, null)<br/>  }))</pre> | `{}` | no |
 | <a name="input_zone_service_ref_list"></a> [zone\_service\_ref\_list](#input\_zone\_service\_ref\_list) | Service reference for the zone creation. | <pre>map(object({<br/>    service_ref_location = optional(list(string), [])<br/>  }))</pre> | `{}` | no |
