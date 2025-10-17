@@ -72,7 +72,6 @@ func TestFullyConfigurableDAInSchematics(t *testing.T) {
 
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
-		Prefix:  "s2s-auth-da",
 		TarIncludePatterns: []string{
 			"*.tf",
 			fullyConfigurableDADir + "/*.tf",
@@ -85,7 +84,6 @@ func TestFullyConfigurableDAInSchematics(t *testing.T) {
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "service_map", Value: string(serviceMapJSON), DataType: "map(object)"},
 	}
 
@@ -118,7 +116,6 @@ func TestRunUpgradeFullyConfigurableDAInSchematics(t *testing.T) {
 
 	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
 		Testing: t,
-		Prefix:  "s2s-auth-da-upg",
 		TarIncludePatterns: []string{
 			"*.tf",
 			fullyConfigurableDADir + "/*.tf",
@@ -131,7 +128,6 @@ func TestRunUpgradeFullyConfigurableDAInSchematics(t *testing.T) {
 
 	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
 		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
-		{Name: "prefix", Value: options.Prefix, DataType: "string"},
 		{Name: "service_map", Value: string(serviceMapJSON), DataType: "map(object)"},
 	}
 
