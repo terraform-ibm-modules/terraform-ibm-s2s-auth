@@ -91,7 +91,7 @@ locals {
 module "service_auth_cbr_rules" {
   source                     = "../.."
   service_map                = local.service_map
-  enable_cbr                 = var.enable_cbr
+  enable_cbr                 = true
   cbr_target_service_details = local.cbr_target_service_details
   prefix                     = var.prefix
   zone_vpc_crn_list          = [ibm_is_vpc.vpc_instance.crn]
