@@ -56,10 +56,6 @@
             {
               "key": "service_map",
               "required": true
-            },
-            {
-              "key": "region",
-              "required": false
             }
           ],
           "iam_permissions": [

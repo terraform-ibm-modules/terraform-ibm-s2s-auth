@@ -8,12 +8,6 @@ variable "ibmcloud_api_key" {
   sensitive   = true
 }
 
-variable "region" {
-  type        = string
-  description = "The region to provision all resources created by this example."
-  default     = "us-south"
-}
-
 variable "prefix" {
   type        = string
   nullable    = true
