@@ -92,3 +92,49 @@ func TestFullyConfigurableDAInSchematics(t *testing.T) {
 	err = options.RunSchematicTest()
 	assert.Nil(t, err, "This should not have errored")
 }
+
+func TestRunUpgradeFullyConfigurableDAInSchematics(t *testing.T) {
+	t.Parallel()
+
+	srcRGUUID := uuid.NewString()
+	tgtRGUUID := uuid.NewString()
+
+	// Sample data for s2s authorisation service map
+	serviceMap := map[string]interface{}{
+		"test-policy-1": map[string]interface{}{
+			"source_service_name":      "databases-for-postgresql",
+			"target_service_name":      "kms",
+			"roles":                    []string{"Reader"},
+			"description":              "This is a test policy",
+			"source_resource_group_id": srcRGUUID,
+			"target_resource_group_id": tgtRGUUID,
+		},
+	}
+
+	serviceMapJSON, err := json.Marshal(serviceMap)
+	if err != nil {
+		t.Fatalf("Failed to marshal cbr_rules: %v", err)
+	}
+
+	options := testschematic.TestSchematicOptionsDefault(&testschematic.TestSchematicOptions{
+		Testing: t,
+		Prefix:  "s2s-auth-da-upg",
+		TarIncludePatterns: []string{
+			"*.tf",
+			fullyConfigurableDADir + "/*.tf",
+		},
+		TemplateFolder:         fullyConfigurableDADir,
+		Tags:                   []string{"test-schematic"},
+		DeleteWorkspaceOnFail:  false,
+		WaitJobCompleteMinutes: 60,
+	})
+
+	options.TerraformVars = []testschematic.TestSchematicTerraformVar{
+		{Name: "ibmcloud_api_key", Value: options.RequiredEnvironmentVars["TF_VAR_ibmcloud_api_key"], DataType: "string", Secure: true},
+		{Name: "prefix", Value: options.Prefix, DataType: "string"},
+		{Name: "service_map", Value: string(serviceMapJSON), DataType: "map(object)"},
+	}
+
+	err = options.RunSchematicUpgradeTest()
+	assert.Nil(t, err, "This should not have errored")
+}
