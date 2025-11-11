@@ -9,7 +9,7 @@ variable "prefix" {
 }
 
 variable "service_map" {
-  description = "Map of unique service pairs and their authorization config."
+  description = "Map of unique service pairs and their authorization config. [Learn more](https://github.com/terraform-ibm-modules/terraform-ibm-s2s-auth/tree/main/solutions/fully-configurable/DA-complex-input-variables.md#service-map)"
   type = map(object({
     source_service_name         = string
     target_service_name         = string
