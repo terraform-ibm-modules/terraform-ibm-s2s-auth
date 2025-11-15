@@ -21,8 +21,8 @@ For important details on upgrading from v1 to v2, please refer to the [migration
 ## Overview
 * [terraform-ibm-s2s-auth](#terraform-ibm-s2s-auth)
 * [Examples](./examples)
-    * [Basic example](./examples/basic)
-    * [Complete example](./examples/complete)
+    * <div style="display: inline-block;"><a href="./examples/basic">Basic example</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=sa-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-s2s-auth/tree/main/examples/basic" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
+    * <div style="display: inline-block;"><a href="./examples/complete">Complete example</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=sa-complete-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-s2s-auth/tree/main/examples/complete" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
@@ -98,7 +98,7 @@ You need the following permissions to run this module.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_cbr_rules"></a> [cbr\_rules](#module\_cbr\_rules) | terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile | 1.33.2 |
+| <a name="module_cbr_rules"></a> [cbr\_rules](#module\_cbr\_rules) | terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile | 1.34.0 |
 
 ### Resources
 
