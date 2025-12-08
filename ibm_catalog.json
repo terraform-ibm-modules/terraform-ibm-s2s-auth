@@ -57,7 +57,12 @@
               "key": "service_map",
               "required": true,
               "custom_config": {
-                "type": "code_editor"
+                "type": "code_editor",
+                "config_constraints": {
+                  "supportedLanguages": [
+                    "hcl"
+                  ]
+                }
               }
             }
           ],
