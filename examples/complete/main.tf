@@ -20,7 +20,6 @@ module "cos_instance" {
   version                = "10.14.9"
   cos_instance_name      = "${var.prefix}-cos"
   kms_encryption_enabled = false
-  retention_enabled      = false
   resource_group_id      = module.resource_group.resource_group_id
   bucket_name            = "${var.prefix}-cos-bucket"
 }
