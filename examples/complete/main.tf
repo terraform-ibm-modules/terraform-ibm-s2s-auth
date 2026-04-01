@@ -8,7 +8,7 @@
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.3.0"
+  version = "1.5.0"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -17,10 +17,9 @@ module "resource_group" {
 # Create COS instance
 module "cos_instance" {
   source                 = "terraform-ibm-modules/cos/ibm"
-  version                = "10.2.21"
+  version                = "10.14.9"
   cos_instance_name      = "${var.prefix}-cos"
   kms_encryption_enabled = false
-  retention_enabled      = false
   resource_group_id      = module.resource_group.resource_group_id
   bucket_name            = "${var.prefix}-cos-bucket"
 }
@@ -28,7 +27,7 @@ module "cos_instance" {
 # Create Key Protect instance
 module "key_protect_instance" {
   source            = "terraform-ibm-modules/key-protect/ibm"
-  version           = "2.10.12"
+  version           = "2.10.61"
   key_protect_name  = "${var.prefix}-key-protect"
   resource_group_id = module.resource_group.resource_group_id
   plan              = "tiered-pricing"
