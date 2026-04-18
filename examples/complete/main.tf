@@ -17,7 +17,7 @@ module "resource_group" {
 # Create COS instance
 module "cos_instance" {
   source                 = "terraform-ibm-modules/cos/ibm"
-  version                = "10.15.1"
+  version                = "10.15.2"
   cos_instance_name      = "${var.prefix}-cos"
   kms_encryption_enabled = false
   resource_group_id      = module.resource_group.resource_group_id
