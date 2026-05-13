@@ -11,15 +11,21 @@ variable "prefix" {
 variable "service_map" {
   description = "Map of unique service pairs and their authorization config."
   type = map(object({
-    source_service_name         = string
-    target_service_name         = string
-    roles                       = list(string)
-    description                 = optional(string, null)
-    source_service_account_id   = optional(string, null)
+    source_service_name = string
+    target_service_name = string
+    roles               = list(string)
+    description         = optional(string, null)
+
+    source_service_account_id = optional(string, null)
+
     source_resource_instance_id = optional(string, null)
     target_resource_instance_id = optional(string, null)
-    source_resource_group_id    = optional(string, null)
-    target_resource_group_id    = optional(string, null)
+
+    source_resource_group_id = optional(string, null)
+    target_resource_group_id = optional(string, null)
+
+    source_resource_type = optional(string, null)
+    target_resource_type = optional(string, null)
   }))
   default = {}
 
