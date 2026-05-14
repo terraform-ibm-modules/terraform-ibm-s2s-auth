@@ -31,10 +31,15 @@ The `service_map` input variable allows you to define service to service authori
 
 - `target_resource_group_id` (optional): The resource group ID for the target service. Allows specifying a group-level target rather than an individual resource instance. Mutually exclusive with `target_resource_instance_id`.
 
+- `source_resource_type` (optional): The resource type of the source service. This allows you to scope the authorization policy to a specific type of resource for the source service.
+
+- `target_resource_type` (optional): The resource type of the target service. This allows defining access control for a specific resource type exposed by the target service.
+
 ### Points to note
 
 - You must provide either `source_resource_instance_id` or `source_resource_group_id` but not both.
 - Similarly, only one of `target_resource_instance_id` or `target_resource_group_id` should be provided to avoid conflicts in target scope definition.
+- `source_resource_type` and `target_resource_type` can be used to create more granular service-to-service authorization policies based on specific resource types.
 
 ### Example Service Map Configuration
 
@@ -71,6 +76,23 @@ service_map = {
     target_resource_instance_id = null
     source_resource_group_id    = null
     target_resource_group_id    = "example-resource-group"
+  }
+}
+```
+
+#### Resource Type based s2s Authorisation Policy
+
+Authorize a specific source resource type to access a specific target resource instance id.
+
+```
+service_map = {
+  "resource-type-policy" = {
+    source_service_name         = "is"
+    target_service_name         = "containers-kubernetes"
+    roles                       = ["Viewer"]
+    description                 = "Allow VPE resources to access cluster."
+    source_resource_type        = "endpoint-gateway"
+    target_resource_instance_id    = "abcd12xxxxxxxxe21fgh"
   }
 }
 ```

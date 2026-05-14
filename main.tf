@@ -3,16 +3,24 @@
 ##############################################################################
 
 resource "ibm_iam_authorization_policy" "auth_policies" {
-  for_each                    = var.service_map
-  source_service_name         = each.value.source_service_name
-  target_service_name         = each.value.target_service_name
-  roles                       = each.value.roles
-  description                 = each.value.description
-  source_service_account      = each.value.source_service_account_id
+  for_each = var.service_map
+
+  source_service_name = each.value.source_service_name
+  target_service_name = each.value.target_service_name
+
+  roles       = each.value.roles
+  description = each.value.description
+
+  source_service_account = each.value.source_service_account_id
+
   source_resource_instance_id = each.value.source_resource_instance_id
   target_resource_instance_id = each.value.target_resource_instance_id
-  source_resource_group_id    = each.value.source_resource_group_id
-  target_resource_group_id    = each.value.target_resource_group_id
+
+  source_resource_group_id = each.value.source_resource_group_id
+  target_resource_group_id = each.value.target_resource_group_id
+
+  source_resource_type = each.value.source_resource_type
+  target_resource_type = each.value.target_resource_type
 }
 
 module "cbr_rules" {
