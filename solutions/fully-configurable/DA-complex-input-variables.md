@@ -90,13 +90,9 @@ service_map = {
     source_service_name         = "is"
     target_service_name         = "containers-kubernetes"
     roles                       = ["Viewer"]
-
     description                 = "Allow VPE resources to access cluster."
-
-    source_resource_instance_id    = "be19xxxxxxxx3ea90c7d"
-    target_resource_instance_id    = "abcd12xxxxxxxxe21fgh"
-
     source_resource_type        = "endpoint-gateway"
+    target_resource_instance_id    = "abcd12xxxxxxxxe21fgh"
   }
 }
 ```
