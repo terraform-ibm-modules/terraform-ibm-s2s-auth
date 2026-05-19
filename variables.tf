@@ -26,6 +26,18 @@ variable "service_map" {
 
     source_resource_type = optional(string, null)
     target_resource_type = optional(string, null)
+
+    source_resource_attributes = optional(list(object({
+      name     = string
+      value    = string
+      operator = optional(string)
+    })), null)
+
+    target_resource_attributes = optional(list(object({
+      name     = string
+      value    = string
+      operator = optional(string)
+    })), null)
   }))
   default = {}
 

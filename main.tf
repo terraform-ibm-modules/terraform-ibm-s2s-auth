@@ -21,6 +21,24 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
 
   source_resource_type = each.value.source_resource_type
   target_resource_type = each.value.target_resource_type
+
+  dynamic "source_resource_attributes" {
+    for_each = each.value.source_resource_attributes != null ? each.value.source_resource_attributes : []
+    content {
+      name     = source_resource_attributes.value.name
+      value    = source_resource_attributes.value.value
+      operator = source_resource_attributes.value.operator
+    }
+  }
+
+  dynamic "target_resource_attributes" {
+    for_each = each.value.target_resource_attributes != null ? each.value.target_resource_attributes : []
+    content {
+      name     = target_resource_attributes.value.name
+      value    = target_resource_attributes.value.value
+      operator = target_resource_attributes.value.operator
+    }
+  }
 }
 
 module "cbr_rules" {

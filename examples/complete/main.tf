@@ -3,6 +3,13 @@
 ##############################################################################
 
 ##############################################################################
+# Data Sources
+##############################################################################
+
+data "ibm_iam_account_settings" "account_settings" {
+}
+
+##############################################################################
 # Resource Group
 ##############################################################################
 
@@ -73,6 +80,45 @@ locals {
       target_resource_instance_id = null
       source_resource_group_id    = null
       target_resource_group_id    = module.resource_group.resource_group_id
+    }
+    "test-policy-4" = {
+      source_service_name         = "cloud-object-storage"
+      target_service_name         = "kms"
+      roles                       = ["Reader"]
+      description                 = "This is a test policy with resource attributes"
+      source_resource_instance_id = null
+      target_resource_instance_id = null
+      source_resource_group_id    = module.resource_group.resource_group_id
+      target_resource_group_id    = null
+      source_resource_attributes = [
+        {
+          name     = "accountId"
+          value    = data.ibm_iam_account_settings.account_settings.account_id
+          operator = null
+        },
+        {
+          name     = "serviceName"
+          value    = "cloud-object-storage"
+          operator = null
+        }
+      ]
+      target_resource_attributes = [
+        {
+          name     = "accountId"
+          value    = data.ibm_iam_account_settings.account_settings.account_id
+          operator = null
+        },
+        {
+          name     = "serviceName"
+          value    = "kms"
+          operator = null
+        },
+        {
+          name     = "resourceType"
+          value    = "key"
+          operator = "stringEquals"
+        }
+      ]
     }
 
 
