@@ -92,6 +92,45 @@ module "service_auth_cbr_rules" {
         "source_service_name"= "containers-kubernetes",
         "target_rg"= "<target_rg>",
         "target_service_name"= "kms"
+    },
+    "test-policy-3" = {
+        "description"= "Auth policy with resource attributes for granular scoping",
+        "roles"= [
+            "Reader",
+            "Writer"
+        ],
+        "source_service_name"= "cloud-object-storage",
+        "target_service_name"= "kms",
+        "subject_attributes" = [
+          {
+            "name"  = "accountId",
+            "value" = "<account_id>"
+          },
+          {
+            "name"  = "serviceName",
+            "value" = "cloud-object-storage"
+          },
+          {
+            "name"     = "resource",
+            "value"    = "bucket-name-*",
+            "operator" = "stringMatch"
+          }
+        ],
+        "resource_attributes" = [
+          {
+            "name"  = "accountId",
+            "value" = "<account_id>"
+          },
+          {
+            "name"  = "serviceName",
+            "value" = "kms"
+          },
+          {
+            "name"     = "resourceType",
+            "value"    = "key",
+            "operator" = "stringEquals"
+          }
+        ]
     }
   }
 }
