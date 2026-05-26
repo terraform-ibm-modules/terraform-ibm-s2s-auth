@@ -5,41 +5,42 @@
 resource "ibm_iam_authorization_policy" "auth_policies" {
   for_each = var.service_map
 
-  source_service_name = each.value.source_service_name
-  target_service_name = each.value.target_service_name
+  # Use individual arguments only when nested blocks are NOT provided
+  source_service_name         = try(each.value.subject_attributes, null) == null ? each.value.source_service_name : null
+  source_service_account      = try(each.value.subject_attributes, null) == null ? each.value.source_service_account_id : null
+  source_resource_instance_id = try(each.value.subject_attributes, null) == null ? each.value.source_resource_instance_id : null
+  source_resource_group_id    = try(each.value.subject_attributes, null) == null ? each.value.source_resource_group_id : null
+  source_resource_type        = try(each.value.subject_attributes, null) == null ? each.value.source_resource_type : null
+
+  target_service_name         = try(each.value.resource_attributes, null) == null ? each.value.target_service_name : null
+  target_resource_instance_id = try(each.value.resource_attributes, null) == null ? each.value.target_resource_instance_id : null
+  target_resource_group_id    = try(each.value.resource_attributes, null) == null ? each.value.target_resource_group_id : null
+  target_resource_type        = try(each.value.resource_attributes, null) == null ? each.value.target_resource_type : null
 
   roles       = each.value.roles
   description = each.value.description
 
-  source_service_account = each.value.source_service_account_id
-
-  source_resource_instance_id = each.value.source_resource_instance_id
-  target_resource_instance_id = each.value.target_resource_instance_id
-
-  source_resource_group_id = each.value.source_resource_group_id
-  target_resource_group_id = each.value.target_resource_group_id
-
-  source_resource_type = each.value.source_resource_type
-  target_resource_type = each.value.target_resource_type
-
+  # Dynamic subject_attributes block (only created when provided)
   dynamic "subject_attributes" {
-    for_each = each.value.subject_attributes != null ? each.value.subject_attributes : []
+    for_each = try(each.value.subject_attributes, [])
     content {
       name     = subject_attributes.value.name
       value    = subject_attributes.value.value
-      operator = subject_attributes.value.operator
+      operator = try(subject_attributes.value.operator, "stringEquals")
     }
   }
 
+  # Dynamic resource_attributes block (only created when provided)
   dynamic "resource_attributes" {
-    for_each = each.value.resource_attributes != null ? each.value.resource_attributes : []
+    for_each = try(each.value.resource_attributes, [])
     content {
       name     = resource_attributes.value.name
       value    = resource_attributes.value.value
-      operator = resource_attributes.value.operator
+      operator = try(resource_attributes.value.operator, "stringEquals")
     }
   }
 }
+
 
 module "cbr_rules" {
   count                  = var.enable_cbr == false ? 0 : 1

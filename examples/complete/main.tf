@@ -82,44 +82,32 @@ locals {
       target_resource_group_id    = module.resource_group.resource_group_id
     }
     "test-policy-4" = {
-      source_service_name         = "cloud-object-storage"
-      target_service_name         = "kms"
-      roles                       = ["Reader"]
-      description                 = "This is a test policy with resource attributes"
-      source_resource_instance_id = null
-      target_resource_instance_id = null
-      source_resource_group_id    = module.resource_group.resource_group_id
-      target_resource_group_id    = null
-      subject_attributes = [
-        {
-          name     = "accountId"
-          value    = data.ibm_iam_account_settings.account_settings.account_id
-          operator = null
-        },
-        {
-          name     = "serviceName"
-          value    = "cloud-object-storage"
-          operator = null
-        }
-      ]
-      resource_attributes = [
-        {
-          name     = "accountId"
-          value    = data.ibm_iam_account_settings.account_settings.account_id
-          operator = null
-        },
-        {
-          name     = "serviceName"
-          value    = "kms"
-          operator = null
-        },
-        {
-          name     = "resourceType"
-          value    = "key"
-          operator = "stringEquals"
-        }
-      ]
-    }
+    roles       = ["Reader", "Writer"]
+    description = "New dynamic approach"
+    
+    subject_attributes = [
+      {
+        name  = "serviceName"
+        value = "cloud-object-storage"
+      },
+      {
+        name  = "accountId"
+        value = "12345"
+      }
+    ]
+    
+    resource_attributes = [
+      {
+        name  = "serviceName"
+        value = "kms"
+      },
+      {
+        name     = "resourceType"
+        value    = "key"
+        operator = "stringEquals"
+      }
+    ]
+  }
   }
 
   cbr_target_service_details = [
