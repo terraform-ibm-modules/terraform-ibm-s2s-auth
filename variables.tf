@@ -47,12 +47,12 @@ variable "service_map" {
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      (svc.subject_attributes == null) || 
-      (svc.source_service_name == null && 
-       svc.source_service_account_id == null && 
-       svc.source_resource_instance_id == null && 
-       svc.source_resource_group_id == null && 
-       svc.source_resource_type == null)
+      (svc.subject_attributes == null) ||
+      (svc.source_service_name == null &&
+        svc.source_service_account_id == null &&
+        svc.source_resource_instance_id == null &&
+        svc.source_resource_group_id == null &&
+      svc.source_resource_type == null)
     ])
     error_message = "Cannot use both subject_attributes and individual source_* arguments. Choose one approach."
   }
@@ -61,11 +61,11 @@ variable "service_map" {
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      (svc.resource_attributes == null) || 
-      (svc.target_service_name == null && 
-       svc.target_resource_instance_id == null && 
-       svc.target_resource_group_id == null && 
-       svc.target_resource_type == null)
+      (svc.resource_attributes == null) ||
+      (svc.target_service_name == null &&
+        svc.target_resource_instance_id == null &&
+        svc.target_resource_group_id == null &&
+      svc.target_resource_type == null)
     ])
     error_message = "Cannot use both resource_attributes and individual target_* arguments. Choose one approach."
   }
@@ -74,10 +74,10 @@ variable "service_map" {
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      (svc.subject_attributes != null && length(svc.subject_attributes) > 0) ||
-      (svc.source_service_name != null || 
-       svc.source_resource_group_id != null || 
-       svc.source_service_account_id != null)
+      (svc.subject_attributes != null ? length(svc.subject_attributes) > 0 : false) ||
+      (svc.source_service_name != null ||
+        svc.source_resource_group_id != null ||
+      svc.source_service_account_id != null)
     ])
     error_message = "At least one source identifier must be provided: either subject_attributes or one of source_service_name, source_resource_group_id, source_service_account_id."
   }
@@ -86,9 +86,9 @@ variable "service_map" {
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      (svc.resource_attributes != null && length(svc.resource_attributes) > 0) ||
-      (svc.target_service_name != null || 
-       svc.target_resource_type != null)
+      (svc.resource_attributes != null ? length(svc.resource_attributes) > 0 : false) ||
+      (svc.target_service_name != null ||
+      svc.target_resource_type != null)
     ])
     error_message = "At least one target identifier must be provided: either resource_attributes or target_service_name/target_resource_type."
   }

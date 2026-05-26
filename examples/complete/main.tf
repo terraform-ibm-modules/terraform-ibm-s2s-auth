@@ -3,13 +3,6 @@
 ##############################################################################
 
 ##############################################################################
-# Data Sources
-##############################################################################
-
-data "ibm_iam_account_settings" "account_settings" {
-}
-
-##############################################################################
 # Resource Group
 ##############################################################################
 
@@ -82,32 +75,32 @@ locals {
       target_resource_group_id    = module.resource_group.resource_group_id
     }
     "test-policy-4" = {
-    roles       = ["Reader", "Writer"]
-    description = "New dynamic approach"
-    
-    subject_attributes = [
-      {
-        name  = "serviceName"
-        value = "cloud-object-storage"
-      },
-      {
-        name  = "accountId"
-        value = "12345"
-      }
-    ]
-    
-    resource_attributes = [
-      {
-        name  = "serviceName"
-        value = "kms"
-      },
-      {
-        name     = "resourceType"
-        value    = "key"
-        operator = "stringEquals"
-      }
-    ]
-  }
+      roles       = ["Reader", "Writer"]
+      description = "New dynamic approach"
+
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = "12345"
+        }
+      ]
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name     = "resourceType"
+          value    = "key"
+          operator = "stringEquals"
+        }
+      ]
+    }
   }
 
   cbr_target_service_details = [
