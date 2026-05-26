@@ -22,7 +22,7 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
 
   # Dynamic subject_attributes block (only created when provided)
   dynamic "subject_attributes" {
-    for_each = try(each.value.subject_attributes, [])
+    for_each = coalesce(each.value.subject_attributes, [])
     content {
       name     = subject_attributes.value.name
       value    = subject_attributes.value.value
@@ -32,7 +32,7 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
 
   # Dynamic resource_attributes block (only created when provided)
   dynamic "resource_attributes" {
-    for_each = try(each.value.resource_attributes, [])
+    for_each = coalesce(each.value.resource_attributes, [])
     content {
       name     = resource_attributes.value.name
       value    = resource_attributes.value.value
