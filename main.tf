@@ -6,16 +6,16 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
   for_each = var.service_map
 
   # Use individual arguments only when nested blocks are NOT provided
-  source_service_name         = try(each.value.subject_attributes, null) == null ? each.value.source_service_name : null
-  source_service_account      = try(each.value.subject_attributes, null) == null ? each.value.source_service_account_id : null
-  source_resource_instance_id = try(each.value.subject_attributes, null) == null ? each.value.source_resource_instance_id : null
-  source_resource_group_id    = try(each.value.subject_attributes, null) == null ? each.value.source_resource_group_id : null
-  source_resource_type        = try(each.value.subject_attributes, null) == null ? each.value.source_resource_type : null
+  source_service_name         = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_service_name
+  source_service_account      = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_service_account_id
+  source_resource_instance_id = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_resource_instance_id
+  source_resource_group_id    = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_resource_group_id
+  source_resource_type        = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_resource_type
 
-  target_service_name         = try(each.value.resource_attributes, null) == null ? each.value.target_service_name : null
-  target_resource_instance_id = try(each.value.resource_attributes, null) == null ? each.value.target_resource_instance_id : null
-  target_resource_group_id    = try(each.value.resource_attributes, null) == null ? each.value.target_resource_group_id : null
-  target_resource_type        = try(each.value.resource_attributes, null) == null ? each.value.target_resource_type : null
+  target_service_name         = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_service_name
+  target_resource_instance_id = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_resource_instance_id
+  target_resource_group_id    = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_resource_group_id
+  target_resource_type        = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_resource_type
 
   roles       = each.value.roles
   description = each.value.description
