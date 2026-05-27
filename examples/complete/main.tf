@@ -2,6 +2,10 @@
 # Complete example
 ##############################################################################
 
+# Get current account ID
+data "ibm_iam_account_settings" "iam_account_settings" {
+}
+
 ##############################################################################
 # Resource Group
 ##############################################################################
@@ -76,7 +80,7 @@ locals {
     }
     "test-policy-4" = {
       roles       = ["Reader"]
-      description = "New dynamic approach"
+      description = "New dynamic approach using subject_attributes and resource_attributes"
 
       subject_attributes = [
         {
@@ -85,7 +89,7 @@ locals {
         },
         {
           name  = "accountId"
-          value = "12345"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
         }
       ]
 
@@ -93,6 +97,10 @@ locals {
         {
           name  = "serviceName"
           value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
         },
         {
           name     = "resourceType"

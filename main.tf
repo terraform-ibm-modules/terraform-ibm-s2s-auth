@@ -2,25 +2,89 @@
 # Service To Service Authorization Policies
 ##############################################################################
 
-resource "ibm_iam_authorization_policy" "auth_policies" {
-  for_each = var.service_map
+# Policies using ONLY legacy approach (no dynamic blocks at all)
+resource "ibm_iam_authorization_policy" "auth_policies_legacy" {
+  for_each = {
+    for k, v in var.service_map : k => v
+    if try(v.subject_attributes, null) == null && try(v.resource_attributes, null) == null
+  }
 
-  # Use individual arguments only when nested blocks are NOT provided
-  source_service_name         = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_service_name
-  source_service_account      = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_service_account_id
-  source_resource_instance_id = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_resource_instance_id
-  source_resource_group_id    = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_resource_group_id
-  source_resource_type        = can(each.value.subject_attributes) && length(coalesce(each.value.subject_attributes, [])) > 0 ? null : each.value.source_resource_type
+  source_service_name         = try(each.value.source_service_name, null)
+  source_service_account      = try(each.value.source_service_account_id, null)
+  source_resource_instance_id = try(each.value.source_resource_instance_id, null)
+  source_resource_group_id    = try(each.value.source_resource_group_id, null)
+  source_resource_type        = try(each.value.source_resource_type, null)
 
-  target_service_name         = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_service_name
-  target_resource_instance_id = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_resource_instance_id
-  target_resource_group_id    = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_resource_group_id
-  target_resource_type        = can(each.value.resource_attributes) && length(coalesce(each.value.resource_attributes, [])) > 0 ? null : each.value.target_resource_type
+  target_service_name         = try(each.value.target_service_name, null)
+  target_resource_instance_id = try(each.value.target_resource_instance_id, null)
+  target_resource_group_id    = try(each.value.target_resource_group_id, null)
+  target_resource_type        = try(each.value.target_resource_type, null)
 
   roles       = each.value.roles
-  description = each.value.description
+  description = try(each.value.description, null)
+}
 
-  # Dynamic subject_attributes block (only created when provided)
+# Policies using subject_attributes (with legacy target fields)
+resource "ibm_iam_authorization_policy" "auth_policies_subject_attrs" {
+  for_each = {
+    for k, v in var.service_map : k => v
+    if try(v.subject_attributes, null) != null && try(v.resource_attributes, null) == null
+  }
+
+  target_service_name         = try(each.value.target_service_name, null)
+  target_resource_instance_id = try(each.value.target_resource_instance_id, null)
+  target_resource_group_id    = try(each.value.target_resource_group_id, null)
+  target_resource_type        = try(each.value.target_resource_type, null)
+
+  roles       = each.value.roles
+  description = try(each.value.description, null)
+
+  dynamic "subject_attributes" {
+    for_each = coalesce(each.value.subject_attributes, [])
+    content {
+      name     = subject_attributes.value.name
+      value    = subject_attributes.value.value
+      operator = try(subject_attributes.value.operator, "stringEquals")
+    }
+  }
+}
+
+# Policies using resource_attributes (with legacy source fields)
+resource "ibm_iam_authorization_policy" "auth_policies_resource_attrs" {
+  for_each = {
+    for k, v in var.service_map : k => v
+    if try(v.subject_attributes, null) == null && try(v.resource_attributes, null) != null
+  }
+
+  source_service_name         = try(each.value.source_service_name, null)
+  source_service_account      = try(each.value.source_service_account_id, null)
+  source_resource_instance_id = try(each.value.source_resource_instance_id, null)
+  source_resource_group_id    = try(each.value.source_resource_group_id, null)
+  source_resource_type        = try(each.value.source_resource_type, null)
+
+  roles       = each.value.roles
+  description = try(each.value.description, null)
+
+  dynamic "resource_attributes" {
+    for_each = coalesce(each.value.resource_attributes, [])
+    content {
+      name     = resource_attributes.value.name
+      value    = resource_attributes.value.value
+      operator = try(resource_attributes.value.operator, "stringEquals")
+    }
+  }
+}
+
+# Policies using BOTH subject_attributes AND resource_attributes
+resource "ibm_iam_authorization_policy" "auth_policies_both_attrs" {
+  for_each = {
+    for k, v in var.service_map : k => v
+    if try(v.subject_attributes, null) != null && try(v.resource_attributes, null) != null
+  }
+
+  roles       = each.value.roles
+  description = try(each.value.description, null)
+
   dynamic "subject_attributes" {
     for_each = coalesce(each.value.subject_attributes, [])
     content {
@@ -30,7 +94,6 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
     }
   }
 
-  # Dynamic resource_attributes block (only created when provided)
   dynamic "resource_attributes" {
     for_each = coalesce(each.value.resource_attributes, [])
     content {

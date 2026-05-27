@@ -12,34 +12,34 @@ variable "service_map" {
   description = "Map of unique service pairs and their authorization config."
   type = map(object({
     # Legacy individual arguments (backward compatible)
-    source_service_name = optional(string, null)
-    target_service_name = optional(string, null)
+    source_service_name = optional(string)
+    target_service_name = optional(string)
     roles               = list(string)
-    description         = optional(string, null)
+    description         = optional(string)
 
-    source_service_account_id = optional(string, null)
+    source_service_account_id = optional(string)
 
-    source_resource_instance_id = optional(string, null)
-    target_resource_instance_id = optional(string, null)
+    source_resource_instance_id = optional(string)
+    target_resource_instance_id = optional(string)
 
-    source_resource_group_id = optional(string, null)
-    target_resource_group_id = optional(string, null)
+    source_resource_group_id = optional(string)
+    target_resource_group_id = optional(string)
 
-    source_resource_type = optional(string, null)
-    target_resource_type = optional(string, null)
+    source_resource_type = optional(string)
+    target_resource_type = optional(string)
 
     # New dynamic attributes approach
     subject_attributes = optional(list(object({
       name     = string
       value    = string
       operator = optional(string, "stringEquals")
-    })), null)
+    })))
 
     resource_attributes = optional(list(object({
       name     = string
       value    = string
       operator = optional(string, "stringEquals")
-    })), null)
+    })))
   }))
   default = {}
 
