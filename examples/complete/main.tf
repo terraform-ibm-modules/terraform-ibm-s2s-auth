@@ -75,7 +75,7 @@ locals {
       target_resource_group_id    = module.resource_group.resource_group_id
     }
     "test-policy-4" = {
-      roles       = ["Reader", "Writer"]
+      roles       = ["Reader"]
       description = "New dynamic approach"
 
       subject_attributes = [
