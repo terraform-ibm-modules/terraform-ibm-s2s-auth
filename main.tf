@@ -6,7 +6,10 @@
 resource "ibm_iam_authorization_policy" "auth_policies_legacy" {
   for_each = {
     for k, v in var.service_map : k => v
-    if try(v.subject_attributes, null) == null && try(v.resource_attributes, null) == null
+    if(
+      (!contains(keys(v), "subject_attributes") || v.subject_attributes == null) &&
+      (!contains(keys(v), "resource_attributes") || v.resource_attributes == null)
+    )
   }
 
   source_service_name         = try(each.value.source_service_name, null)
@@ -22,13 +25,20 @@ resource "ibm_iam_authorization_policy" "auth_policies_legacy" {
 
   roles       = each.value.roles
   description = try(each.value.description, null)
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Policies using subject_attributes (with legacy target fields)
 resource "ibm_iam_authorization_policy" "auth_policies_subject_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
-    if try(v.subject_attributes, null) != null && try(v.resource_attributes, null) == null
+    if(
+      contains(keys(v), "subject_attributes") && v.subject_attributes != null &&
+      (!contains(keys(v), "resource_attributes") || v.resource_attributes == null)
+    )
   }
 
   target_service_name         = try(each.value.target_service_name, null)
@@ -46,6 +56,10 @@ resource "ibm_iam_authorization_policy" "auth_policies_subject_attrs" {
       value    = subject_attributes.value.value
       operator = try(subject_attributes.value.operator, "stringEquals")
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -53,7 +67,10 @@ resource "ibm_iam_authorization_policy" "auth_policies_subject_attrs" {
 resource "ibm_iam_authorization_policy" "auth_policies_resource_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
-    if try(v.subject_attributes, null) == null && try(v.resource_attributes, null) != null
+    if(
+      (!contains(keys(v), "subject_attributes") || v.subject_attributes == null) &&
+      contains(keys(v), "resource_attributes") && v.resource_attributes != null
+    )
   }
 
   source_service_name         = try(each.value.source_service_name, null)
@@ -73,13 +90,20 @@ resource "ibm_iam_authorization_policy" "auth_policies_resource_attrs" {
       operator = try(resource_attributes.value.operator, "stringEquals")
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Policies using BOTH subject_attributes AND resource_attributes
 resource "ibm_iam_authorization_policy" "auth_policies_both_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
-    if try(v.subject_attributes, null) != null && try(v.resource_attributes, null) != null
+    if(
+      contains(keys(v), "subject_attributes") && v.subject_attributes != null &&
+      contains(keys(v), "resource_attributes") && v.resource_attributes != null
+    )
   }
 
   roles       = each.value.roles
@@ -101,6 +125,10 @@ resource "ibm_iam_authorization_policy" "auth_policies_both_attrs" {
       value    = resource_attributes.value.value
       operator = try(resource_attributes.value.operator, "stringEquals")
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 

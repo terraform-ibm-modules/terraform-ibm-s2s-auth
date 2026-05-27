@@ -47,40 +47,39 @@ resource "ibm_is_vpc" "vpc_instance" {
 
 # generate a service_map
 locals {
-  service_map = {
+  # Legacy policies (no dynamic attributes)
+  legacy_policies = {
     "test-policy-1" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "This is a test policy locked to 2 instance IDs"
+      description                 = "Legacy: COS instance to KMS instance"
       source_resource_instance_id = module.cos_instance.cos_instance_guid
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
-      source_resource_group_id    = null
-      target_resource_group_id    = null
     }
     "test-policy-2" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "This is a test policy locked to target instance ID"
-      source_resource_instance_id = null
-      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+      description                 = "Legacy: COS resource group to KMS instance"
       source_resource_group_id    = module.resource_group.resource_group_id
-      target_resource_group_id    = null
+      target_resource_instance_id = module.key_protect_instance.key_protect_guid
     }
     "test-policy-3" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "This is a test policy locked to source instance ID"
+      description                 = "Legacy: COS instance to KMS resource group"
       source_resource_instance_id = module.cos_instance.cos_instance_guid
-      target_resource_instance_id = null
-      source_resource_group_id    = null
       target_resource_group_id    = module.resource_group.resource_group_id
     }
+  }
+
+  # Policies with BOTH subject_attributes AND resource_attributes
+  both_attrs_policies = {
     "test-policy-4" = {
       roles       = ["Reader"]
-      description = "New dynamic approach using subject_attributes and resource_attributes"
+      description = "Dynamic: COS account to KMS keys in account"
 
       subject_attributes = [
         {
@@ -110,6 +109,66 @@ locals {
       ]
     }
   }
+
+  # Policies with subject_attributes and legacy target fields
+  subject_attrs_policies = {
+    "test-policy-5" = {
+      roles       = ["Reader"]
+      description = "Dynamic: COS in resource group to specific KMS instance"
+
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name  = "resourceGroupId"
+          value = module.resource_group.resource_group_id
+        }
+      ]
+
+      target_service_name         = "kms"
+      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+    }
+  }
+
+  # Policies with resource_attributes and legacy source fields
+  resource_attrs_policies = {
+    "test-policy-6" = {
+      roles       = ["Reader"]
+      description = "Dynamic: Specific COS instance to KMS in resource group"
+
+      source_service_name         = "cloud-object-storage"
+      source_resource_instance_id = module.cos_instance.cos_instance_guid
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name  = "resourceGroupId"
+          value = module.resource_group.resource_group_id
+        }
+      ]
+    }
+  }
+
+  # Merge all policies for the module
+  service_map = merge(
+    local.legacy_policies,
+    local.both_attrs_policies,
+    local.subject_attrs_policies,
+    local.resource_attrs_policies
+  )
 
   cbr_target_service_details = [
     {
