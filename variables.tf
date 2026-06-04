@@ -11,7 +11,7 @@ variable "prefix" {
 variable "service_map" {
   description = "Map of unique service pairs and their authorization config."
   type = map(object({
-    # Legacy individual arguments (backward compatible)
+    # Static individual arguments (backward compatible)
     source_service_name = optional(string)
     target_service_name = optional(string)
     roles               = list(string)
@@ -43,7 +43,7 @@ variable "service_map" {
   }))
   default = {}
 
-  # Validation: Ensure either legacy OR new approach is used for source/subject
+  # Validation: Ensure either static OR new approach is used for source/subject
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -57,7 +57,7 @@ variable "service_map" {
     error_message = "Cannot use both subject_attributes and individual source_* arguments. Choose one approach."
   }
 
-  # Validation: Ensure either legacy OR new approach is used for target/resource
+  # Validation: Ensure either static OR new approach is used for target/resource
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -93,7 +93,7 @@ variable "service_map" {
     error_message = "At least one target identifier must be provided: either resource_attributes or target_service_name/target_resource_type."
   }
 
-  # Legacy validation: source_resource_instance_id and source_resource_group_id are mutually exclusive
+  # Static attributes validation: source_resource_instance_id and source_resource_group_id are mutually exclusive
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -103,7 +103,7 @@ variable "service_map" {
     error_message = "source_resource_instance_id and source_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
-  # Legacy validation: target_resource_instance_id and target_resource_group_id are mutually exclusive
+  # Static attributes validation: target_resource_instance_id and target_resource_group_id are mutually exclusive
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -113,7 +113,7 @@ variable "service_map" {
     error_message = "target_resource_instance_id and target_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
-  # Legacy validation: target_resource_instance_id format
+  # Static attributes validation: target_resource_instance_id format
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -122,7 +122,7 @@ variable "service_map" {
     error_message = "target_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
   }
 
-  # Legacy validation: source_resource_instance_id format
+  # Static attributes validation: source_resource_instance_id format
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :

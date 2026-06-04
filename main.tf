@@ -2,8 +2,8 @@
 # Service To Service Authorization Policies
 ##############################################################################
 
-# Policies using ONLY legacy approach (no dynamic blocks at all)
-resource "ibm_iam_authorization_policy" "auth_policies_legacy" {
+# Policies using ONLY static attribute approach (no dynamic blocks at all)
+resource "ibm_iam_authorization_policy" "auth_policies_static_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
     if(
@@ -31,8 +31,8 @@ resource "ibm_iam_authorization_policy" "auth_policies_legacy" {
   }
 }
 
-# Policies using subject_attributes (with legacy target fields)
-resource "ibm_iam_authorization_policy" "auth_policies_subject_attrs" {
+# Policies using subject_attributes (with static target fields)
+resource "ibm_iam_authorization_policy" "auth_policies_dynamic_subject_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
     if(
@@ -63,8 +63,8 @@ resource "ibm_iam_authorization_policy" "auth_policies_subject_attrs" {
   }
 }
 
-# Policies using resource_attributes (with legacy source fields)
-resource "ibm_iam_authorization_policy" "auth_policies_resource_attrs" {
+# Policies using resource_attributes (with static source fields)
+resource "ibm_iam_authorization_policy" "auth_policies_dynamic_resource_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
     if(
@@ -97,7 +97,7 @@ resource "ibm_iam_authorization_policy" "auth_policies_resource_attrs" {
 }
 
 # Policies using BOTH subject_attributes AND resource_attributes
-resource "ibm_iam_authorization_policy" "auth_policies_both_attrs" {
+resource "ibm_iam_authorization_policy" "auth_policies_dynamic_attrs" {
   for_each = {
     for k, v in var.service_map : k => v
     if(

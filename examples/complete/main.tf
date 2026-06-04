@@ -48,29 +48,29 @@ resource "ibm_is_vpc" "vpc_instance" {
 # Generate a service_map with 9 unique, non-conflicting policies
 # Matrix ensures no two policies create identical IBM Cloud authorization policies
 locals {
-  # Legacy policies (no dynamic attributes) - 3 policies
-  legacy_policies = {
-    "legacy-instance-to-instance" = {
+  # Static attribute policies (no dynamic attributes) - 3 policies
+  policies = {
+    "instance-to-instance" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "Legacy: COS instance to KMS instance"
+      description                 = "COS instance to KMS instance"
       source_resource_instance_id = module.cos_instance.cos_instance_guid
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
     }
-    "legacy-instance-to-rg" = {
+    "instance-to-rg" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "Legacy: COS instance to KMS resource group"
+      description                 = "COS instance to KMS resource group"
       source_resource_instance_id = module.cos_instance.cos_instance_guid
       target_resource_group_id    = module.resource_group.resource_group_id
     }
-    "legacy-rg-to-rg" = {
+    "rg-to-rg" = {
       source_service_name      = "cloud-object-storage"
       target_service_name      = "kms"
       roles                    = ["Reader"]
-      description              = "Legacy: COS resource group to KMS resource group"
+      description              = "COS resource group to KMS resource group"
       source_resource_group_id = module.resource_group.resource_group_id
       target_resource_group_id = module.resource_group.resource_group_id
     }
@@ -141,7 +141,7 @@ locals {
     }
   }
 
-  # Policies with subject_attributes and legacy target fields - 2 policies
+  # Policies with subject_attributes and Static target fields - 2 policies
   subject_attrs_policies = {
     "subject-attrs-account-to-instance" = {
       roles       = ["Reader"]
@@ -185,7 +185,7 @@ locals {
     }
   }
 
-  # Policies with resource_attributes and legacy source fields - 2 policies
+  # Policies with resource_attributes and static source fields - 2 policies
   resource_attrs_policies = {
     "resource-attrs-instance-to-account" = {
       roles       = ["Reader"]
@@ -230,7 +230,7 @@ locals {
 
   # Merge all policies for the module
   service_map = merge(
-    local.legacy_policies,
+    local.policies,
     local.both_attrs_policies,
     local.subject_attrs_policies,
     local.resource_attrs_policies
