@@ -2,115 +2,28 @@
 # Service To Service Authorization Policies
 ##############################################################################
 
-# Policies using ONLY static attribute approach (no dynamic blocks at all)
-resource "ibm_iam_authorization_policy" "auth_policies_static_attrs" {
-  for_each = {
-    for k, v in var.service_map : k => v
-    if(
-      (!contains(keys(v), "subject_attributes") || v.subject_attributes == null) &&
-      (!contains(keys(v), "resource_attributes") || v.resource_attributes == null)
-    )
-  }
+resource "ibm_iam_authorization_policy" "auth_policies" {
+  for_each = var.service_map
 
-  source_service_name         = try(each.value.source_service_name, null)
-  source_service_account      = try(each.value.source_service_account_id, null)
-  source_resource_instance_id = try(each.value.source_resource_instance_id, null)
-  source_resource_group_id    = try(each.value.source_resource_group_id, null)
-  source_resource_type        = try(each.value.source_resource_type, null)
-
-  target_service_name         = try(each.value.target_service_name, null)
-  target_resource_instance_id = try(each.value.target_resource_instance_id, null)
-  target_resource_group_id    = try(each.value.target_resource_group_id, null)
-  target_resource_type        = try(each.value.target_resource_type, null)
+  source_service_name = each.value.source_service_name
+  target_service_name = each.value.target_service_name
 
   roles       = each.value.roles
-  description = try(each.value.description, null)
+  description = each.value.description
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+  source_service_account = each.value.source_service_account_id
 
-# Policies using subject_attributes (with static target fields)
-resource "ibm_iam_authorization_policy" "auth_policies_dynamic_subject_attrs" {
-  for_each = {
-    for k, v in var.service_map : k => v
-    if(
-      contains(keys(v), "subject_attributes") && v.subject_attributes != null &&
-      (!contains(keys(v), "resource_attributes") || v.resource_attributes == null)
-    )
-  }
+  source_resource_instance_id = each.value.source_resource_instance_id
+  target_resource_instance_id = each.value.target_resource_instance_id
 
-  target_service_name         = try(each.value.target_service_name, null)
-  target_resource_instance_id = try(each.value.target_resource_instance_id, null)
-  target_resource_group_id    = try(each.value.target_resource_group_id, null)
-  target_resource_type        = try(each.value.target_resource_type, null)
+  source_resource_group_id = each.value.source_resource_group_id
+  target_resource_group_id = each.value.target_resource_group_id
 
-  roles       = each.value.roles
-  description = try(each.value.description, null)
+  source_resource_type = each.value.source_resource_type
+  target_resource_type = each.value.target_resource_type
 
   dynamic "subject_attributes" {
-    for_each = coalesce(each.value.subject_attributes, [])
-    content {
-      name     = subject_attributes.value.name
-      value    = subject_attributes.value.value
-      operator = try(subject_attributes.value.operator, "stringEquals")
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-# Policies using resource_attributes (with static source fields)
-resource "ibm_iam_authorization_policy" "auth_policies_dynamic_resource_attrs" {
-  for_each = {
-    for k, v in var.service_map : k => v
-    if(
-      (!contains(keys(v), "subject_attributes") || v.subject_attributes == null) &&
-      contains(keys(v), "resource_attributes") && v.resource_attributes != null
-    )
-  }
-
-  source_service_name         = try(each.value.source_service_name, null)
-  source_service_account      = try(each.value.source_service_account_id, null)
-  source_resource_instance_id = try(each.value.source_resource_instance_id, null)
-  source_resource_group_id    = try(each.value.source_resource_group_id, null)
-  source_resource_type        = try(each.value.source_resource_type, null)
-
-  roles       = each.value.roles
-  description = try(each.value.description, null)
-
-  dynamic "resource_attributes" {
-    for_each = coalesce(each.value.resource_attributes, [])
-    content {
-      name     = resource_attributes.value.name
-      value    = resource_attributes.value.value
-      operator = try(resource_attributes.value.operator, "stringEquals")
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-# Policies using BOTH subject_attributes AND resource_attributes
-resource "ibm_iam_authorization_policy" "auth_policies_dynamic_attrs" {
-  for_each = {
-    for k, v in var.service_map : k => v
-    if(
-      contains(keys(v), "subject_attributes") && v.subject_attributes != null &&
-      contains(keys(v), "resource_attributes") && v.resource_attributes != null
-    )
-  }
-
-  roles       = each.value.roles
-  description = try(each.value.description, null)
-
-  dynamic "subject_attributes" {
-    for_each = coalesce(each.value.subject_attributes, [])
+    for_each = length(each.value.subject_attributes) > 0 ? { for idx, subject in each.value.subject_attributes : idx => subject } : {}
     content {
       name     = subject_attributes.value.name
       value    = subject_attributes.value.value
@@ -119,19 +32,15 @@ resource "ibm_iam_authorization_policy" "auth_policies_dynamic_attrs" {
   }
 
   dynamic "resource_attributes" {
-    for_each = coalesce(each.value.resource_attributes, [])
+    # for_each = coalesce(each.value.resource_attributes, [])
+    for_each = length(each.value.resource_attributes) > 0 ? { for idx, subject in each.value.resource_attributes : idx => subject } : {}
     content {
       name     = resource_attributes.value.name
       value    = resource_attributes.value.value
       operator = try(resource_attributes.value.operator, "stringEquals")
     }
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
-
 
 module "cbr_rules" {
   count                  = var.enable_cbr == false ? 0 : 1

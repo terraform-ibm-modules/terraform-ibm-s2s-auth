@@ -11,109 +11,62 @@ variable "prefix" {
 variable "service_map" {
   description = "Map of unique service pairs and their authorization config."
   type = map(object({
-    # Static individual arguments (backward compatible)
     source_service_name = optional(string)
     target_service_name = optional(string)
     roles               = list(string)
-    description         = optional(string)
+    description         = optional(string, null)
 
-    source_service_account_id = optional(string)
+    source_service_account_id = optional(string, null)
 
-    source_resource_instance_id = optional(string)
-    target_resource_instance_id = optional(string)
+    source_resource_instance_id = optional(string, null)
+    target_resource_instance_id = optional(string, null)
 
-    source_resource_group_id = optional(string)
-    target_resource_group_id = optional(string)
+    source_resource_group_id = optional(string, null)
+    target_resource_group_id = optional(string, null)
 
-    source_resource_type = optional(string)
-    target_resource_type = optional(string)
+    source_resource_type = optional(string, null)
+    target_resource_type = optional(string, null)
 
-    # New dynamic attributes approach
     subject_attributes = optional(list(object({
       name     = string
       value    = string
       operator = optional(string, "stringEquals")
-    })))
+    })), [])
 
     resource_attributes = optional(list(object({
       name     = string
       value    = string
       operator = optional(string, "stringEquals")
-    })))
+    })), [])
   }))
   default = {}
 
-  # Validation: Ensure either static OR new approach is used for source/subject
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      (svc.subject_attributes == null) ||
-      (svc.source_service_name == null &&
-        svc.source_service_account_id == null &&
-        svc.source_resource_instance_id == null &&
-        svc.source_resource_group_id == null &&
-      svc.source_resource_type == null)
-    ])
-    error_message = "Cannot use both subject_attributes and individual source_* arguments. Choose one approach."
-  }
-
-  # Validation: Ensure either static OR new approach is used for target/resource
-  validation {
-    condition = alltrue([
-      for svc in values(var.service_map) :
-      (svc.resource_attributes == null) ||
-      (svc.target_service_name == null &&
-        svc.target_resource_instance_id == null &&
-        svc.target_resource_group_id == null &&
-      svc.target_resource_type == null)
-    ])
-    error_message = "Cannot use both resource_attributes and individual target_* arguments. Choose one approach."
-  }
-
-  # Validation: At least one source identifier must be provided
-  validation {
-    condition = alltrue([
-      for svc in values(var.service_map) :
-      (svc.subject_attributes != null ? length(svc.subject_attributes) > 0 : false) ||
-      (svc.source_service_name != null ||
-        svc.source_resource_group_id != null ||
-      svc.source_service_account_id != null)
-    ])
-    error_message = "At least one source identifier must be provided: either subject_attributes or one of source_service_name, source_resource_group_id, source_service_account_id."
-  }
-
-  # Validation: At least one target identifier must be provided
-  validation {
-    condition = alltrue([
-      for svc in values(var.service_map) :
-      (svc.resource_attributes != null ? length(svc.resource_attributes) > 0 : false) ||
-      (svc.target_service_name != null ||
-      svc.target_resource_type != null)
-    ])
-    error_message = "At least one target identifier must be provided: either resource_attributes or target_service_name/target_resource_type."
-  }
-
-  # Static attributes validation: source_resource_instance_id and source_resource_group_id are mutually exclusive
-  validation {
-    condition = alltrue([
-      for svc in values(var.service_map) :
-      svc.subject_attributes != null ? true :
-      (svc.source_resource_instance_id == null || svc.source_resource_group_id == null)
+      # Only validate mutual exclusivity if NOT using subject_attributes (dynamic approach)
+      length(svc.subject_attributes) == 0 ? (
+        (svc.source_resource_instance_id != null && svc.source_resource_group_id == null) ||
+        (svc.source_resource_instance_id == null && svc.source_resource_group_id != null) ||
+        (svc.source_resource_instance_id == null && svc.source_resource_group_id == null)
+      ) : true
     ])
     error_message = "source_resource_instance_id and source_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
-  # Static attributes validation: target_resource_instance_id and target_resource_group_id are mutually exclusive
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      svc.resource_attributes != null ? true :
-      (svc.target_resource_instance_id == null || svc.target_resource_group_id == null)
+      # Only validate mutual exclusivity if NOT using resource_attributes (dynamic approach)
+      length(svc.resource_attributes) == 0 ? (
+        (svc.target_resource_instance_id != null && svc.target_resource_group_id == null) ||
+        (svc.target_resource_instance_id == null && svc.target_resource_group_id != null) ||
+        (svc.target_resource_instance_id == null && svc.target_resource_group_id == null)
+      ) : true
     ])
     error_message = "target_resource_instance_id and target_resource_group_id are mutually exclusive, please only provide one of the values"
   }
 
-  # Static attributes validation: target_resource_instance_id format
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -122,7 +75,6 @@ variable "service_map" {
     error_message = "target_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
   }
 
-  # Static attributes validation: source_resource_instance_id format
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
@@ -131,7 +83,6 @@ variable "service_map" {
     error_message = "source_resource_instance_id must be the GUID of the instance and match the following pattern: \"^[a-zA-Z0-9-]*$\""
   }
 }
-
 
 variable "cbr_target_service_details" {
   type = list(object({
