@@ -50,34 +50,29 @@ resource "ibm_is_vpc" "vpc_instance" {
 locals {
   # Static attribute policies (no dynamic attributes) - 3 policies
   static_policies = {
-    "instance-to-instance" = {
+    # Static: COS instance to KMS instance
+    "static-instance-to-instance" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "COS instance to KMS instance"
+      description                 = "Static: COS instance to KMS instance"
       source_resource_instance_id = module.cos_instance.cos_instance_guid
       target_resource_instance_id = module.key_protect_instance.key_protect_guid
     }
-    "instance-to-rg" = {
+    # Static: COS resource group to KMS instance
+    "static-rg-to-instance" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
       roles                       = ["Reader"]
-      description                 = "COS instance to KMS resource group"
-      source_resource_instance_id = module.cos_instance.cos_instance_guid
-      target_resource_group_id    = module.resource_group.resource_group_id
-    }
-    "rg-to-rg" = {
-      source_service_name      = "cloud-object-storage"
-      target_service_name      = "kms"
-      roles                    = ["Reader"]
-      description              = "COS resource group to KMS resource group"
-      source_resource_group_id = module.resource_group.resource_group_id
-      target_resource_group_id = module.resource_group.resource_group_id
+      description                 = "Static: COS resource group to KMS instance"
+      source_resource_group_id    = module.resource_group.resource_group_id
+      target_resource_instance_id = module.key_protect_instance.key_protect_guid
     }
   }
 
   # Policies with BOTH subject_attributes AND resource_attributes - 2 policies
   both_attrs_policies = {
+    # Dynamic Both: COS account-wide to KMS keys (with resourceType filter)
     "both-account-to-keys" = {
       roles       = ["Reader"]
       description = "Dynamic Both: COS account-wide to KMS keys (resourceType filter)"
@@ -109,9 +104,10 @@ locals {
         }
       ]
     }
-    "both-rg-to-account" = {
+    # Dynamic Both: COS resource group to KMS resource group
+    "both-rg-to-rg" = {
       roles       = ["Reader"]
-      description = "Dynamic Both: COS resource group to KMS account-wide"
+      description = "Dynamic Both: COS resource group to KMS resource group"
 
       subject_attributes = [
         {
@@ -136,6 +132,10 @@ locals {
         {
           name  = "accountId"
           value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name  = "resourceGroupId"
+          value = module.resource_group.resource_group_id
         }
       ]
     }
@@ -143,9 +143,10 @@ locals {
 
   # Policies with subject_attributes and Static target fields - 2 policies
   subject_attrs_policies = {
-    "subject-attrs-account-to-instance" = {
+    # Dynamic Subject: COS account-wide to KMS resource group
+    "subject-attrs-account-to-rg" = {
       roles       = ["Reader"]
-      description = "Dynamic Subject: COS account-wide to specific KMS instance"
+      description = "Dynamic Subject: COS account-wide to KMS resource group"
 
       subject_attributes = [
         {
@@ -158,12 +159,13 @@ locals {
         }
       ]
 
-      target_service_name         = "kms"
-      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+      target_service_name      = "kms"
+      target_resource_group_id = module.resource_group.resource_group_id
     }
-    "subject-attrs-rg-to-instance" = {
+    # Dynamic Subject: COS instance to KMS resource group
+    "subject-attrs-instance-to-rg" = {
       roles       = ["Reader"]
-      description = "Dynamic Subject: COS resource group to specific KMS instance"
+      description = "Dynamic Subject: COS instance to KMS resource group"
 
       subject_attributes = [
         {
@@ -175,21 +177,22 @@ locals {
           value = data.ibm_iam_account_settings.iam_account_settings.account_id
         },
         {
-          name  = "resourceGroupId"
-          value = module.resource_group.resource_group_id
+          name  = "serviceInstance"
+          value = module.cos_instance.cos_instance_guid
         }
       ]
 
-      target_service_name         = "kms"
-      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+      target_service_name      = "kms"
+      target_resource_group_id = module.resource_group.resource_group_id
     }
   }
 
   # Policies with resource_attributes and static source fields - 2 policies
   resource_attrs_policies = {
+    # Dynamic Resource: COS instance to KMS account-wide
     "resource-attrs-instance-to-account" = {
       roles       = ["Reader"]
-      description = "Dynamic Resource: Specific COS instance to KMS account-wide"
+      description = "Dynamic Resource: COS instance to KMS account-wide"
 
       source_service_name         = "cloud-object-storage"
       source_resource_instance_id = module.cos_instance.cos_instance_guid
@@ -205,11 +208,13 @@ locals {
         }
       ]
     }
-    "resource-attrs-account-to-rg" = {
+    # Dynamic Resource: COS resource group to KMS account-wide
+    "resource-attrs-rg-to-account" = {
       roles       = ["Reader"]
-      description = "Dynamic Resource: COS account-wide to KMS resource group"
+      description = "Dynamic Resource: COS resource group to KMS account-wide"
 
-      source_service_name = "cloud-object-storage"
+      source_service_name      = "cloud-object-storage"
+      source_resource_group_id = module.resource_group.resource_group_id
 
       resource_attributes = [
         {
@@ -219,10 +224,6 @@ locals {
         {
           name  = "accountId"
           value = data.ibm_iam_account_settings.iam_account_settings.account_id
-        },
-        {
-          name  = "resourceGroupId"
-          value = module.resource_group.resource_group_id
         }
       ]
     }
