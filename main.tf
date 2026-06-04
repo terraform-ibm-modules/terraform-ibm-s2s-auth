@@ -21,6 +21,25 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
 
   source_resource_type = each.value.source_resource_type
   target_resource_type = each.value.target_resource_type
+
+  dynamic "subject_attributes" {
+    for_each = length(each.value.subject_attributes) > 0 ? { for idx, subject in each.value.subject_attributes : idx => subject } : {}
+    content {
+      name     = subject_attributes.value.name
+      value    = subject_attributes.value.value
+      operator = try(subject_attributes.value.operator, "stringEquals")
+    }
+  }
+
+  dynamic "resource_attributes" {
+    # for_each = coalesce(each.value.resource_attributes, [])
+    for_each = length(each.value.resource_attributes) > 0 ? { for idx, subject in each.value.resource_attributes : idx => subject } : {}
+    content {
+      name     = resource_attributes.value.name
+      value    = resource_attributes.value.value
+      operator = try(resource_attributes.value.operator, "stringEquals")
+    }
+  }
 }
 
 module "cbr_rules" {

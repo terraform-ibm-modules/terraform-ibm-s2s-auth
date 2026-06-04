@@ -43,40 +43,54 @@ resource "ibm_is_vpc" "vpc_instance" {
 
 # generate a service_map
 locals {
-  service_map = {
-    "test-policy-1" = {
-      source_service_name         = "cloud-object-storage"
-      target_service_name         = "kms"
-      roles                       = ["Reader"]
-      description                 = "This is a test policy locked to 2 instance IDs"
-      source_resource_instance_id = module.cos_instance.cos_instance_guid
-      target_resource_instance_id = module.key_protect_instance.key_protect_guid
-      source_resource_group_id    = null
-      target_resource_group_id    = null
-    }
-    "test-policy-2" = {
-      source_service_name         = "cloud-object-storage"
-      target_service_name         = "kms"
-      roles                       = ["Reader"]
-      description                 = "This is a test policy locked to target instance ID"
-      source_resource_instance_id = null
-      target_resource_instance_id = module.key_protect_instance.key_protect_guid
-      source_resource_group_id    = module.resource_group.resource_group_id
-      target_resource_group_id    = null
-    }
-    "test-policy-3" = {
-      source_service_name         = "cloud-object-storage"
-      target_service_name         = "kms"
-      roles                       = ["Reader"]
-      description                 = "This is a test policy locked to source instance ID"
-      source_resource_instance_id = module.cos_instance.cos_instance_guid
-      target_resource_instance_id = null
-      source_resource_group_id    = null
-      target_resource_group_id    = module.resource_group.resource_group_id
-    }
+  # service_map = {
+  #   "test-policy-1" = {
+  #     source_service_name         = "cloud-object-storage"
+  #     target_service_name         = "kms"
+  #     roles                       = ["Reader"]
+  #     description                 = "This is a test policy locked to 2 instance IDs"
+  #     source_resource_instance_id = module.cos_instance.cos_instance_guid
+  #     target_resource_instance_id = module.key_protect_instance.key_protect_guid
+  #     source_resource_group_id    = null
+  #     target_resource_group_id    = null
+  #   }
+  #   "test-policy-2" = {
+  #     source_service_name         = "cloud-object-storage"
+  #     target_service_name         = "kms"
+  #     roles                       = ["Reader"]
+  #     description                 = "This is a test policy locked to target instance ID"
+  #     source_resource_instance_id = null
+  #     target_resource_instance_id = module.key_protect_instance.key_protect_guid
+  #     source_resource_group_id    = module.resource_group.resource_group_id
+  #     target_resource_group_id    = null
+  #     # resource_attributes = [
+  #     #   {
+  #     #     name  = "serviceName"
+  #     #     value = "kms"
+  #     #   },
+  #     #   {
+  #     #     name  = "accountId"
+  #     #     value = data.ibm_iam_account_settings.iam_account_settings.account_id
+  #     #   },
+  #     #   {
+  #     #     name  = "resourceGroupId"
+  #     #     value = module.resource_group.resource_group_id
+  #     #   }
+  #     # ]
+  #   }
+  #   "test-policy-3" = {
+  #     source_service_name         = "cloud-object-storage"
+  #     target_service_name         = "kms"
+  #     roles                       = ["Reader"]
+  #     description                 = "This is a test policy locked to source instance ID"
+  #     source_resource_instance_id = module.cos_instance.cos_instance_guid
+  #     target_resource_instance_id = null
+  #     source_resource_group_id    = null
+  #     target_resource_group_id    = module.resource_group.resource_group_id
+  #   }
 
 
-  }
+  # }
 
   cbr_target_service_details = [
     {
@@ -95,4 +109,209 @@ module "service_auth_cbr_rules" {
   prefix                     = var.prefix
   zone_vpc_crn_list          = [ibm_is_vpc.vpc_instance.crn]
   zone_service_ref_list      = { "cloud-object-storage" = {} }
+}
+
+
+# Get current account ID
+data "ibm_iam_account_settings" "iam_account_settings" {
+}
+
+locals {
+  static_policies = {
+    "test-policy-2" = {
+      source_service_name         = "cloud-object-storage"
+      target_service_name         = "kms"
+      roles                       = ["Reader"]
+      description                 = "This is a test policy locked to target instance ID"
+      source_resource_instance_id = null
+      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+      source_resource_group_id    = module.resource_group.resource_group_id
+      target_resource_group_id    = null
+      # resource_attributes = [
+      #   {
+      #     name  = "serviceName"
+      #     value = "kms"
+      #   },
+      #   {
+      #     name  = "accountId"
+      #     value = data.ibm_iam_account_settings.iam_account_settings.account_id
+      #   },
+      #   {
+      #     name  = "resourceGroupId"
+      #     value = module.resource_group.resource_group_id
+      #   }
+      # ]
+    }
+    "test-policy-3" = {
+      source_service_name         = "cloud-object-storage"
+      target_service_name         = "kms"
+      roles                       = ["Reader"]
+      description                 = "This is a test policy locked to source instance ID"
+      source_resource_instance_id = module.cos_instance.cos_instance_guid
+      target_resource_instance_id = null
+      source_resource_group_id    = null
+      target_resource_group_id    = module.resource_group.resource_group_id
+    }
+
+  }
+
+  # Policies with BOTH subject_attributes AND resource_attributes - 2 policies
+  both_attrs_policies = {
+    "both-account-to-keys" = {
+      roles               = ["Reader"]
+      description         = "Dynamic Both: COS account-wide to KMS keys (resourceType filter)"
+      target_service_name = "kms"
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name     = "resourceType"
+          value    = "key"
+          operator = "stringEquals"
+        }
+      ]
+    }
+    "both-rg-to-account" = {
+      roles       = ["Reader"]
+      description = "Dynamic Both: COS resource group to KMS account-wide"
+
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name  = "resourceGroupId"
+          value = module.resource_group.resource_group_id
+        }
+      ]
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+    }
+  }
+
+  # Policies with subject_attributes and Static target fields - 2 policies
+  subject_attrs_policies = {
+    "subject-attrs-account-to-instance" = {
+      roles       = ["Reader"]
+      description = "Dynamic Subject: COS account-wide to specific KMS instance"
+
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+
+      target_service_name         = "kms"
+      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+    }
+    "subject-attrs-rg-to-instance" = {
+      roles       = ["Reader"]
+      description = "Dynamic Subject: COS resource group to specific KMS instance"
+
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name  = "resourceGroupId"
+          value = module.resource_group.resource_group_id
+        }
+      ]
+
+      target_service_name         = "kms"
+      target_resource_instance_id = module.key_protect_instance.key_protect_guid
+    }
+  }
+
+  # Policies with resource_attributes and static source fields - 2 policies
+  resource_attrs_policies = {
+    "resource-attrs-instance-to-account" = {
+      roles       = ["Reader"]
+      description = "Dynamic Resource: Specific COS instance to KMS account-wide"
+
+      source_service_name         = "cloud-object-storage"
+      source_resource_instance_id = module.cos_instance.cos_instance_guid
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+    }
+    "resource-attrs-account-to-rg" = {
+      roles       = ["Reader"]
+      description = "Dynamic Resource: COS account-wide to KMS resource group"
+
+      source_service_name = "cloud-object-storage"
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name  = "resourceGroupId"
+          value = module.resource_group.resource_group_id
+        }
+      ]
+    }
+  }
+
+  # Merge all policies for the module
+  service_map = merge(
+    local.static_policies,
+    local.both_attrs_policies,
+    local.subject_attrs_policies,
+    local.resource_attrs_policies
+  )
 }
