@@ -32,7 +32,6 @@ resource "ibm_iam_authorization_policy" "auth_policies" {
   }
 
   dynamic "resource_attributes" {
-    # for_each = coalesce(each.value.resource_attributes, [])
     for_each = length(each.value.resource_attributes) > 0 ? { for idx, subject in each.value.resource_attributes : idx => subject } : {}
     content {
       name     = resource_attributes.value.name
