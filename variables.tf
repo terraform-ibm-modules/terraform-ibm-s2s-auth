@@ -11,8 +11,8 @@ variable "prefix" {
 variable "service_map" {
   description = "Map of unique service pairs and their authorization config."
   type = map(object({
-    source_service_name = string
-    target_service_name = string
+    source_service_name = optional(string)
+    target_service_name = optional(string)
     roles               = list(string)
     description         = optional(string, null)
 
@@ -26,14 +26,30 @@ variable "service_map" {
 
     source_resource_type = optional(string, null)
     target_resource_type = optional(string, null)
+
+    subject_attributes = optional(list(object({
+      name     = string
+      value    = string
+      operator = optional(string, "stringEquals")
+    })), [])
+
+    resource_attributes = optional(list(object({
+      name     = string
+      value    = string
+      operator = optional(string, "stringEquals")
+    })), [])
   }))
   default = {}
 
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      ((svc.source_resource_instance_id != null && svc.source_resource_group_id == null) ||
-      (svc.source_resource_instance_id == null && svc.source_resource_group_id != null))
+      # Only validate mutual exclusivity if NOT using subject_attributes (dynamic approach)
+      length(svc.subject_attributes) == 0 ? (
+        (svc.source_resource_instance_id != null && svc.source_resource_group_id == null) ||
+        (svc.source_resource_instance_id == null && svc.source_resource_group_id != null) ||
+        (svc.source_resource_instance_id == null && svc.source_resource_group_id == null)
+      ) : true
     ])
     error_message = "source_resource_instance_id and source_resource_group_id are mutually exclusive, please only provide one of the values"
   }
@@ -41,8 +57,12 @@ variable "service_map" {
   validation {
     condition = alltrue([
       for svc in values(var.service_map) :
-      ((svc.target_resource_instance_id != null && svc.target_resource_group_id == null) ||
-      (svc.target_resource_instance_id == null && svc.target_resource_group_id != null))
+      # Only validate mutual exclusivity if NOT using resource_attributes (dynamic approach)
+      length(svc.resource_attributes) == 0 ? (
+        (svc.target_resource_instance_id != null && svc.target_resource_group_id == null) ||
+        (svc.target_resource_instance_id == null && svc.target_resource_group_id != null) ||
+        (svc.target_resource_instance_id == null && svc.target_resource_group_id == null)
+      ) : true
     ])
     error_message = "target_resource_instance_id and target_resource_group_id are mutually exclusive, please only provide one of the values"
   }

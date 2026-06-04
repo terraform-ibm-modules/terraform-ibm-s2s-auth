@@ -2,6 +2,10 @@
 # Complete example
 ##############################################################################
 
+# Get current account ID
+data "ibm_iam_account_settings" "iam_account_settings" {
+}
+
 ##############################################################################
 # Resource Group
 ##############################################################################
@@ -41,9 +45,11 @@ resource "ibm_is_vpc" "vpc_instance" {
   tags           = var.resource_tags
 }
 
-# generate a service_map
+# Generate a service_map with original 3 test policies + additional scenario tests
+# All policies are unique to avoid conflicts
 locals {
   service_map = {
+    # Original test policies from main branch (backward compatibility)
     "test-policy-1" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
@@ -75,7 +81,79 @@ locals {
       target_resource_group_id    = module.resource_group.resource_group_id
     }
 
+    # Additional scenario tests for dynamic attributes functionality
+    # Scenario 1: Both subject_attributes AND resource_attributes
+    "scenario-both-attrs" = {
+      roles       = ["Reader"]
+      description = "Scenario: Both dynamic attributes - COS account to KMS keys"
 
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        },
+        {
+          name     = "resourceType"
+          value    = "key"
+          operator = "stringEquals"
+        }
+      ]
+    }
+
+    # Scenario 2: subject_attributes with static target
+    "scenario-subject-attrs" = {
+      roles       = ["Reader"]
+      description = "Scenario: Dynamic subject with static target - COS account to KMS RG"
+
+      subject_attributes = [
+        {
+          name  = "serviceName"
+          value = "cloud-object-storage"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+
+      target_service_name      = "kms"
+      target_resource_group_id = module.resource_group.resource_group_id
+    }
+
+    # Scenario 3: resource_attributes with static source
+    "scenario-resource-attrs" = {
+      roles       = ["Reader"]
+      description = "Scenario: Static source with dynamic resource - COS instance to KMS account"
+
+      source_service_name         = "cloud-object-storage"
+      source_resource_instance_id = module.cos_instance.cos_instance_guid
+
+      resource_attributes = [
+        {
+          name  = "serviceName"
+          value = "kms"
+        },
+        {
+          name  = "accountId"
+          value = data.ibm_iam_account_settings.iam_account_settings.account_id
+        }
+      ]
+    }
   }
 
   cbr_target_service_details = [
