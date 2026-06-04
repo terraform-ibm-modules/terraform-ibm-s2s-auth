@@ -49,7 +49,7 @@ resource "ibm_is_vpc" "vpc_instance" {
 # Matrix ensures no two policies create identical IBM Cloud authorization policies
 locals {
   # Static attribute policies (no dynamic attributes) - 3 policies
-  policies = {
+  static_policies = {
     "instance-to-instance" = {
       source_service_name         = "cloud-object-storage"
       target_service_name         = "kms"
@@ -230,7 +230,7 @@ locals {
 
   # Merge all policies for the module
   service_map = merge(
-    local.policies,
+    local.static_policies,
     local.both_attrs_policies,
     local.subject_attrs_policies,
     local.resource_attrs_policies
