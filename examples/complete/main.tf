@@ -12,7 +12,7 @@ data "ibm_iam_account_settings" "iam_account_settings" {
 
 module "resource_group" {
   source  = "terraform-ibm-modules/resource-group/ibm"
-  version = "1.6.0"
+  version = "1.6.1"
   # if an existing resource group is not set (null) create a new one using prefix
   resource_group_name          = var.resource_group == null ? "${var.prefix}-resource-group" : null
   existing_resource_group_name = var.resource_group
@@ -21,7 +21,7 @@ module "resource_group" {
 # Create COS instance
 module "cos_instance" {
   source                 = "terraform-ibm-modules/cos/ibm"
-  version                = "10.16.0"
+  version                = "10.17.2"
   cos_instance_name      = "${var.prefix}-cos"
   kms_encryption_enabled = false
   resource_group_id      = module.resource_group.resource_group_id
@@ -31,7 +31,7 @@ module "cos_instance" {
 # Create Key Protect instance
 module "key_protect_instance" {
   source            = "terraform-ibm-modules/key-protect/ibm"
-  version           = "2.11.2"
+  version           = "2.13.5"
   key_protect_name  = "${var.prefix}-key-protect"
   resource_group_id = module.resource_group.resource_group_id
   plan              = "tiered-pricing"
