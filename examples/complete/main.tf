@@ -36,7 +36,7 @@ module "key_protect_instance" {
   resource_group_id = module.resource_group.resource_group_id
   plan              = "tiered-pricing"
   region            = var.region
-  tags              = var.resource_tags
+  resource_tags     = var.resource_tags
 }
 
 resource "ibm_is_vpc" "vpc_instance" {
