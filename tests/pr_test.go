@@ -36,7 +36,6 @@ func TestRunCompleteExample(t *testing.T) {
 }
 
 func TestRunUpgradeExample(t *testing.T) {
-	t.Parallel()
 
 	options := setupOptions(t, "s2s-upg", completeExampleDir)
 
