@@ -147,26 +147,26 @@ You need the following permissions to run this module.
 ### Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.79.0, < 3.0.0 |
 
 ### Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_cbr_rules"></a> [cbr\_rules](#module\_cbr\_rules) | terraform-ibm-modules/cbr/ibm//modules/cbr-service-profile | 1.36.9 |
 
 ### Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [ibm_iam_authorization_policy.auth_policies](https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/iam_authorization_policy) | resource |
 
 ### Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cbr_target_service_details"></a> [cbr\_target\_service\_details](#input\_cbr\_target\_service\_details) | Details of the target service for which the rule has to be created. | <pre>list(object({<br/>    target_service_name = string<br/>    target_rg           = optional(string)<br/>    enforcement_mode    = string<br/>    tags                = optional(list(string))<br/>  }))</pre> | `[]` | no |
 | <a name="input_enable_cbr"></a> [enable\_cbr](#input\_enable\_cbr) | Set to true to enable creation of Context Based restrictions (CBR) for services defined in var.cbr\_target\_service\_details. When true, var.zone\_vpc\_crn\_list and var.zone\_service\_ref\_list must be provided to create and attach the required CBR zones. When false, no CBR zones or rules are created. | `bool` | `true` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix for new CBR zones and rules. | `string` | `null` | no |
@@ -177,7 +177,7 @@ You need the following permissions to run this module.
 ### Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_auth_policies"></a> [auth\_policies](#output\_auth\_policies) | Authorizations created |
 | <a name="output_cbr_rules"></a> [cbr\_rules](#output\_cbr\_rules) | CBR Rules created |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
